@@ -28,8 +28,12 @@ module FsTree
     end
 
     def target!
-      create_window if Vim::Window.count == 1
+      create_window if VIM::Window.count == 1
       previous!
+    end
+
+    def modified?
+      VIM.evaluate('&modified') == '1'
     end
 
     def previous!
@@ -38,6 +42,7 @@ module FsTree
 
     def open(path, mode = :normal)
       target!
+      mode = :split if mode == :normal && modified?
       path = VIM.filename_escape(path)
       if buffer = find_buffer(path)
         exe "silent #{COMMANDS[:buff][mode]} #{buffer.number}"

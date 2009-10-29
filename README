@@ -32,7 +32,6 @@ R          - refresh (currently looses open directory information)
 == Todo
 
 - maintain open directory information on refresh
-- open files in a split when current buffer is not saved
 - map C to: change current working directory to root directory
 - map c to: change current working directory to selected directory
 - map K to: go to first sibling in directory
