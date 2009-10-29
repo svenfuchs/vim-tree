@@ -31,7 +31,6 @@ R          - refresh (currently looses open directory information)
 
 == Todo
 
-- open tree in a new vertical split
 - maintain open directory information on refresh
 - open files in a split when current buffer is not saved
 - map C to: change current working directory to root directory

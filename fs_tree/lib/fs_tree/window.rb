@@ -12,6 +12,7 @@ module FsTree
       @pane = FsTree::Pane.new(self, FsTree::List.new(root))
       @current_line = 0
 
+      create_window if Vim::Window.count == 1 || $fs_tree.nil?
       init_buffer
       map_keys
       lock
