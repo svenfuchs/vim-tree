@@ -1,0 +1,53 @@
+= FsTree
+
+VIM Filesystem Tree plugin in Ruby.
+
+Very early alpha but already (somewhat) usable.
+
+== Requirements
+
+VIM Ruby support
+
+== Installation
+
+Copy or link fs_tree* to ~/.vim/plugin (i.e. both the fs_tree directory and the
+fs_tree.vim plugin file).
+
+== Usage
+
+:FsTree will open the tree menu.
+
+crsr-left  - close directory (if closed, closes the parent directory)
+crsr-right - open directory (and move into it) or file
+crsr-up    - navigate up
+crsr-down  - navigate down
+cr (enter) - toggle (open/close) directory or open file
+left-click - toggle (open/close) directory or open file
+s          - open a file with split
+v          - open a file with vsplit
+J          - make a directory the root directory
+K          - move the root directory one level up
+R          - refresh (currently looses open directory information)
+
+== Todo
+
+- fix open buffer command for vertical split
+- open tree in a new vertical split
+- maintain open directory information on refresh
+- open files in a split when current buffer is not saved
+- map C to: change current working directory to root directory
+- map c to: change current working directory to selected directory
+- map K to: go to first sibling in directory
+- map J to: go to last sibling in directory
+- map H to: recursively close all nodes below current one
+- map L to: recursively open all nodes under current one
+- map q to: quit tree window
+- map m to: minimize tree window
+- extract config options
+- figure out how to map cmd-click to just activating the window
+  instead of opening the node
+
+== License
+
+Copyright (c) 2009 Sven Fuchs <svenfuchs@artweb-design.de>
+http://www.opensource.org/licenses/mit-license.php
