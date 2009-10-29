@@ -3,11 +3,11 @@ module FsTree
     attr_reader :root
 
     def initialize(path)
-      @root = Directory.new(path, nil, :open)
+      @root = Directory.new(path)
     end
 
     def expand
-      @root = Directory.new(::File.dirname(@root.path), nil, :open)
+      @root = Directory.new(::File.dirname(@root.path))
       reset
     end
 

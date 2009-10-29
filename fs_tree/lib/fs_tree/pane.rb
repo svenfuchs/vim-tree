@@ -9,6 +9,34 @@ module FsTree
       redraw
     end
 
+    def line
+      window.line_number - 1
+    end
+
+    def current
+      list[line]
+    end
+
+    def path
+      current.path
+    end
+
+    def parent
+      current.parent
+    end
+
+    def directory?
+      current.directory?
+    end
+
+    def file?
+      current.file?
+    end
+
+    def open?
+      current.open?
+    end
+
     def action(action)
       send(action) if respond_to?(action)
     end
@@ -24,48 +52,51 @@ module FsTree
     end
 
     def dive
-      ix = window.line_number - 1
-      list.slice(ix) || redraw if list[ix]
+      list.slice(line) || redraw
     end
 
     def toggle
-      ix = window.line_number - 1
-      list[ix].directory? ? list.toggle(ix) && render : window.open(list[ix].path) if list[ix]
+      directory? ? list.toggle(line) && render : window.open(path) if current
     end
 
     def split
-      ix = window.line_number - 1
-      window.open(list[ix].path, :split) if list[ix].file?
+      window.open(path, :split) if file?
     end
 
     def vsplit
-      ix = window.line_number - 1
-      window.open(list[ix].path, :vsplit) if list[ix].file?
+      window.open(path, :vsplit) if file?
     end
 
     def left
-      ix = window.line_number - 1
-      list[ix].open? ? close(ix) : close_parent(ix) if list[ix]
+      open? ? close : close_parent
     end
 
     def right
-      ix = window.line_number - 1
-      list[ix].directory? ? open(window.line_number - 1) : window.open(list[ix].path) if list[ix]
+      directory? ? open : window.open(path)
     end
 
-    def open(ix)
-      window.line_number += 1 if list.open(ix)
+    def page_up
+      window.line_number = parent.children.first
+    end
+
+    def page_down
+      window.line_number = parent.children.last
+    end
+
+    def open
+      list.open(line) && window.line_number += 1
       render
     end
 
-    def close(ix)
+    def close
+      list.close(line)
+      render
+    end
+
+    def close_parent
+      ix = list.index(parent)
       list.close(ix)
       render
-    end
-
-    def close_parent(ix)
-      ix = list.index(list[ix].parent)
-      close(ix)
       window.line_number = ix + 1
     end
 

@@ -2,13 +2,14 @@ module FsTree
   class Entry
     class << self
       def build(path, *args)
-        ::File.directory?(path) ? Directory.new(path, *args) : File.new(path, *args)
+        klass = ::File.directory?(path) ? Directory : File
+        klass.new(path, *args)
       end
     end
 
     attr_accessor :path, :parent, :level
 
-    def initialize(path, parent, state)
+    def initialize(path, parent = nil, state = :open)
       @path = path
       @parent = parent
     end

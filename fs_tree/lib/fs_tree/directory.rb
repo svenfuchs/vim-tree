@@ -2,7 +2,7 @@ module FsTree
   class Directory < Entry
     attr_accessor :state
 
-    def initialize(path, parent, state)
+    def initialize(path, parent = nil, state = :open)
       super
       @state = state
     end

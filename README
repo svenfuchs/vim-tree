@@ -31,7 +31,6 @@ R          - refresh (currently looses open directory information)
 
 == Todo
 
-- fix open buffer command for vertical split
 - open tree in a new vertical split
 - maintain open directory information on refresh
 - open files in a split when current buffer is not saved
@@ -43,9 +42,10 @@ R          - refresh (currently looses open directory information)
 - map L to: recursively open all nodes under current one
 - map q to: quit tree window
 - map m to: minimize tree window
-- extract config options
+- figure out how to delete the last line in the tree buffer
 - figure out how to map cmd-click to just activating the window
   instead of opening the node
+- extract config options
 
 == License
 
