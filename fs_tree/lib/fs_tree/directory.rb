@@ -21,6 +21,10 @@ module FsTree
       end
     end
 
+    def reset
+      @children = nil
+    end
+
     def to_a
       map { |child| [child] + child.to_a }.flatten
     end

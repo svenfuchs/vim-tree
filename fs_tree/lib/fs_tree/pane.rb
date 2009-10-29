@@ -13,6 +13,11 @@ module FsTree
       send(action) if respond_to?(action)
     end
 
+    def refresh
+      @list.reset
+      redraw
+    end
+
     def surface
       @list.expand
       redraw
@@ -20,7 +25,7 @@ module FsTree
 
     def dive
       ix = window.line_number - 1
-      list.slice(ix) && redraw if list[ix]
+      list.slice(ix) || redraw if list[ix]
     end
 
     def toggle

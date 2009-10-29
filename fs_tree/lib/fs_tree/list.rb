@@ -8,7 +8,7 @@ module FsTree
 
     def expand
       @root = Directory.new(::File.dirname(@root.path), nil, :open)
-      clear
+      reset
     end
 
     def slice(ix)
@@ -16,7 +16,7 @@ module FsTree
         @root = entries[ix]
         @root.state = :open
         @root.level = 0
-        clear
+        reset
       end
     end
 
@@ -54,8 +54,9 @@ module FsTree
       entries.each(&block)
     end
 
-    def clear
+    def reset
       @entries = nil
+      root.reset
     end
 
     def entries
