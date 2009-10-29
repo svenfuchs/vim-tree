@@ -1,5 +1,10 @@
 module FsTree
   class Window
+    COMMANDS = {
+      :file => { :normal => 'e', :split => 'sp', :vsplit => 'vs' },
+      :buff => { :normal => 'b', :split => 'sb', :vsplit => 'vert sb' }
+    }
+
     attr_reader :window, :pane
 
     def initialize(window, root)
@@ -34,9 +39,9 @@ module FsTree
       target!
       path = VIM.filename_escape(path)
       if buffer = find_buffer(path)
-        exe "silent #{commands[:buff][mode]} #{buffer.number}"
+        exe "silent #{COMMANDS[:buff][mode]} #{buffer.number}"
       else
-        exe "silent #{commands[:file][mode]} #{path}"
+        exe "silent #{COMMANDS[:file][mode]} #{path}"
       end
       # previous!
     end
@@ -50,19 +55,11 @@ module FsTree
       end
     end
 
-    def commands
-      @commands ||= {
-        :file => { :normal => 'e', :split => 'sp', :vsplit => 'vsp' },
-        :buff => { :normal => 'buff', :split => 'sbuff', :vsplit => 'vsbuff' }
-      }
-    end
-
     def line_number
       buffer.line_number
     end
 
     def line_number=(line_number)
-      # window.cursor = [line_number, window.width + 2]
       window.cursor = [line_number, window.cursor[1]]
       hide_cursor
     end
@@ -137,15 +134,16 @@ module FsTree
       # end
 
       # Special characters
-      # map_key :Tab
       map_key  :Left
       map_key  :Right
       map_char :h,  :left
       map_char :l,  :right
       map_key  :CR, :toggle
       map_char :R,  :refresh
-      map_char :J,  :dive
-      map_char :K,  :surface
+      map_char :D,  :dive
+      map_char :U,  :surface
+      map_char :K,  :page_up
+      map_char :J,  :page_down
       map_char :s,  :split
       map_char :v,  :vsplit
       map "<leftrelease> :call FsTreeAction('toggle')"
