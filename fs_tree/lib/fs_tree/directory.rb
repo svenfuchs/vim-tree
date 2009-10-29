@@ -48,6 +48,8 @@ module FsTree
 
     def handle
       open? ? '▾' : '▸'
+      # open? ? '▼' : '▶'
+      # open? ? '▽' : '▷'
     end
   end
 end

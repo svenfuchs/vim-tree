@@ -5,6 +5,12 @@ module FsTree
   autoload :List,      'fs_tree/list'
   autoload :Pane,      'fs_tree/pane'
   autoload :Window,    'fs_tree/window'
+
+  class << self
+    def run(window, path)
+      FsTree::Window.new(window, path)
+    end
+  end
 end
 
 class String

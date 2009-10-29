@@ -6,6 +6,7 @@ module FsTree
       @window = window
       @list = list
       @line = 0
+      redraw
     end
 
     def action(action)
@@ -25,6 +26,16 @@ module FsTree
     def toggle
       ix = window.line_number - 1
       list[ix].directory? ? list.toggle(ix) && render : window.open(list[ix].path) if list[ix]
+    end
+
+    def split
+      ix = window.line_number - 1
+      window.open(list[ix].path, :split) if list[ix].file?
+    end
+
+    def vsplit
+      ix = window.line_number - 1
+      window.open(list[ix].path, :vsplit) if list[ix].file?
     end
 
     def left

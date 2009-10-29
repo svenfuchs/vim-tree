@@ -1,33 +1,24 @@
 module FsTree
   class Window
-    # class << self
-    #   def select(window)
-    #     return true if window == $curwin
+    attr_reader :window, :pane
 
-    #     # Try to select the given window.
-    #     start = $curwin
-    #     exe("wincmd w") while ($curwin != window) and ($curwin != start)
-    #     return true if $curwin == window
-
-    #     # Failed -- re-select the starting window.
-    #     exe("wincmd w") while $curwin != start
-    #     pretty_msg("ErrorMsg", "Cannot find the correct window!")
-    #     return false
-    #   end
-    # end
-
-    attr_reader :window, :buffer
-
-    def initialize(window, buffer)
+    def initialize(window, root)
       @window = window
-      @buffer = buffer
+      @pane = FsTree::Pane.new(self, FsTree::List.new(root))
       @current_line = 0
 
-      # create_window
       init_buffer
       map_keys
       lock
       hide_cursor
+    end
+
+    def action(action)
+      pane.action(action)
+    end
+
+    def buffer
+      window.buffer
     end
 
     def target!
@@ -39,27 +30,40 @@ module FsTree
       exe('wincmd p')
     end
 
-    def open(path)
+    def open(path, mode = :normal)
       target!
       path = VIM.filename_escape(path)
-      exe "silent e #{path}"
-      previous!
+      if buffer = find_buffer(path)
+        exe "silent #{commands[:buff][mode]} #{buffer.number}"
+      else
+        exe "silent #{commands[:file][mode]} #{path}"
+      end
+      # previous!
     end
 
-    def width
-      @window.width
+    def find_buffer(path)
+      i = 0
+      while i < VIM::Buffer.count
+        buffer = VIM::Buffer[i]
+        return buffer if path == buffer.name
+        i += 1
+      end
     end
 
-    def height
-      @window.height
+    def commands
+      @commands ||= {
+        :file => { :normal => 'e', :split => 'sp', :vsplit => 'vsp' },
+        :buff => { :normal => 'buff', :split => 'sbuff', :vsplit => 'vsbuff' }
+      }
     end
 
     def line_number
-      @buffer.line_number
+      buffer.line_number
     end
 
     def line_number=(line_number)
-      @window.cursor = [line_number, width + 2]
+      # window.cursor = [line_number, window.width + 2]
+      window.cursor = [line_number, window.cursor[1]]
       hide_cursor
     end
 
@@ -72,7 +76,7 @@ module FsTree
 
     def append(line)
       unlocked do
-        line = " #{line}".ljust(@window.width + 3) + ' '
+        line = " #{line}".ljust(window.width + 3) + ' '
         buffer.append(@current_line, line)
         @current_line += 1
       end
@@ -121,6 +125,7 @@ module FsTree
       exe "set report=9999"
       exe "set sidescroll=0"
       exe "set sidescrolloff=0"
+      exe "setlocal winfixwidth"
       # exe "highlight Cursor gui=NONE guifg=NONE guibg=NONE"
       # exe 'syn match FsTree ".*"'
     end
@@ -141,6 +146,9 @@ module FsTree
       map_char :R,  :refresh
       map_char :J,  :dive
       map_char :K,  :surface
+      map_char :s,  :split
+      map_char :v,  :vsplit
+      map "<leftrelease> :call FsTreeAction('toggle')"
     end
 
     def map_char(char, target = char)
@@ -148,17 +156,11 @@ module FsTree
     end
 
     def map_key(key, target = key)
-      map "<#{key}>  :call FsTreeAction('#{target.to_s.downcase}')"
+      map "<#{key}> :call FsTreeAction('#{target.to_s.downcase}')"
     end
 
     def map(command)
-      exe "noremap <silent> <buffer> #{command}<CR>"
-    end
-
-    def printables
-      @printables ||= '/!"#$%&\'()*+,-.0123456789:<=>?#@"' \
-                      'ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`' \
-                      'abcdefghijklmnopqrstuvwxyz{}~'
+      exe "nnoremap <silent> <buffer> #{command}<CR>"
     end
 
     def exe(s)

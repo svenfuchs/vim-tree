@@ -21,7 +21,7 @@ module FsTree
       is_a?(Directory)
     end
 
-    def file
+    def file?
       is_a?(File)
     end
 
