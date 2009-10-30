@@ -7,6 +7,10 @@ module FsTree
       @state = state
     end
 
+    def dirname
+      path
+    end
+
     def each(&block)
       open? ? children.each(&block) : []
     end

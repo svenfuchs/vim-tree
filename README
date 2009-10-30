@@ -27,13 +27,13 @@ s          - open a file with split
 v          - open a file with vsplit
 J          - make a directory the root directory
 K          - move the root directory one level up
+C          - change current working directory to root directory
+c          - change current working directory to selected directory
 R          - refresh (currently looses open directory information)
 
 == Todo
 
 - maintain open directory information on refresh
-- map C to: change current working directory to root directory
-- map c to: change current working directory to selected directory
 - map K to: go to first sibling in directory
 - map J to: go to last sibling in directory
 - map H to: recursively close all nodes below current one

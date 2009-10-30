@@ -4,6 +4,10 @@ module FsTree
       false
     end
 
+    def dirname
+      ::File.dirname(path)
+    end
+
     def map
       []
     end

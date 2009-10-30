@@ -9,6 +9,10 @@ module FsTree
       redraw
     end
 
+    def root
+      list.root
+    end
+
     def line
       window.line_number - 1
     end
@@ -44,6 +48,14 @@ module FsTree
     def refresh
       @list.reset
       redraw
+    end
+
+    def cwd_root
+      window.cwd(root.path)
+    end
+
+    def cwd
+      window.cwd(current.dirname)
     end
 
     def surface

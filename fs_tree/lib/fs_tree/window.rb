@@ -23,6 +23,10 @@ module FsTree
       pane.action(action)
     end
 
+    def cwd(path)
+      exe "cd #{path}"
+    end
+
     def buffer
       window.buffer
     end
@@ -145,13 +149,15 @@ module FsTree
       map_char :h,  :left
       map_char :l,  :right
       map_key  :CR, :toggle
-      map_char :R,  :refresh
-      map_char :D,  :dive
-      map_char :U,  :surface
       map_char :K,  :page_up
       map_char :J,  :page_down
       map_char :s,  :split
       map_char :v,  :vsplit
+      map_char :c,  :cwd
+      map_char :C,  :cwd_root
+      map_char :D,  :dive
+      map_char :U,  :surface
+      map_char :R,  :refresh
       map "<leftrelease> :call FsTreeAction('toggle')"
     end
 
