@@ -45,11 +45,6 @@ module FsTree
       send(action) if respond_to?(action)
     end
 
-    def refresh
-      @list.reset
-      redraw
-    end
-
     def cwd_root
       window.cwd(root.path)
     end
@@ -59,12 +54,17 @@ module FsTree
     end
 
     def surface
-      @list.expand
-      redraw
+      keep_line_number do
+        @list.expand
+        redraw
+      end
     end
 
     def dive
-      list.slice(line) || redraw
+      keep_line_number do
+        list.slice(line)
+        redraw
+      end
     end
 
     def toggle
@@ -112,6 +112,13 @@ module FsTree
       window.line_number = ix + 1
     end
 
+    def refresh
+      window.keep_line_number do
+        @list.reset
+        redraw
+      end
+    end
+
     def redraw
       window.clear
       reset
@@ -128,6 +135,12 @@ module FsTree
       list.each { |entry| window.append(entry.to_s) }
       # window.height.times { window.append('') }
       window.line_number = line_number
+    end
+
+    def keep_line_number(&block)
+      _current = current
+      yield
+      window.line_number = list.index(_current) + 1
     end
   end
 end

@@ -33,5 +33,9 @@ module FsTree
     def to_s
       level * ' '
     end
+
+    def ==(other)
+      self.path == other.path
+    end
   end
 end

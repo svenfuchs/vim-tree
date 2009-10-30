@@ -33,7 +33,6 @@ R          - refresh (currently looses open directory information)
 
 == Todo
 
-- maintain open directory information on refresh
 - map K to: go to first sibling in directory
 - map J to: go to last sibling in directory
 - map H to: recursively close all nodes below current one

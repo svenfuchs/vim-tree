@@ -55,7 +55,11 @@ module FsTree
     end
 
     def reset
-      @entries = nil
+      entries, @entries = @entries, nil
+      entries.each do |entry|
+        ix = index(entry)
+        open(ix) if ix && entry.open?
+      end
       root.reset
     end
 
