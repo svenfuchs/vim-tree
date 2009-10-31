@@ -1,5 +1,5 @@
 module FsTree
-  class File < Entry
+  class File < Node
     def open?
       false
     end
@@ -8,8 +8,8 @@ module FsTree
       ::File.dirname(path)
     end
 
-    def map
-      []
+    def flatten
+      [self]
     end
 
     def to_a

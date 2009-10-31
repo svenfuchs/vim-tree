@@ -1,195 +1,129 @@
 module FsTree
   class Window
-    COMMANDS = {
-      :file => { :normal => 'e', :split => 'sp', :vsplit => 'vs' },
-      :buff => { :normal => 'b', :split => 'sb', :vsplit => 'vert sb' }
-    }
+    extend Forwardable
 
-    attr_reader :window, :pane
+    attr_reader :vim, :list
 
-    def initialize(window, root)
-      @window = window
-      @pane = FsTree::Pane.new(self, FsTree::List.new(root))
-      @current_line = 0
+    def_delegators :list, :root
+    def_delegators :vim, :line
+    def_delegators :current, :path, :parent, :directory?, :file?, :open?,
+                   :first_sibling?, :first_sibling, :last_sibling?, :last_sibling
 
-      create_window if $fs_tree.nil?
-      init_buffer
-      map_keys
-      lock
-      hide_cursor
+    def initialize(vim, path)
+      @vim = vim
+      @list = List.new(path)
+      @line = 0
+      render
     end
 
     def action(action)
-      pane.action(action)
+      send(action) if respond_to?(action)
     end
 
-    def cwd(path)
-      exe "cd #{path}"
+    def cwd_root
+      vim.cwd(root.path)
     end
 
-    def buffer
-      window.buffer
+    def cwd
+      vim.cwd(current.path) if directory?
     end
 
-    def target!
-      create_window if VIM::Window.count == 1
-      previous!
+    def expand
+      maintain_current_entry do
+        @list.expand
+        render
+      end
     end
 
-    def modified?
-      VIM.evaluate('&modified') == '1'
+    def collapse
+      list.collapse(line)
+      render
+      vim.move_to(0)
     end
 
-    def previous!
-      exe('wincmd p')
+    def click
+      directory? ? toggle : vim.open(path)
     end
 
-    def open(path, mode = :normal)
-      target!
-      mode = :split if mode == :normal && modified?
-      path = VIM.filename_escape(path)
-      if buffer = find_buffer(path)
-        exe "silent #{COMMANDS[:buff][mode]} #{buffer.number}"
+    def split
+      vim.split(path) if file?
+    end
+
+    def vsplit
+      vim.vsplit(path) if file?
+    end
+
+    def left
+      open? ? close : close_parent
+    end
+
+    def right
+      if directory?
+        open
+        vim.move_down
       else
-        exe "silent #{COMMANDS[:file][mode]} #{path}"
-      end
-      # previous!
-    end
-
-    def find_buffer(path)
-      i = 0
-      while i < VIM::Buffer.count
-        buffer = VIM::Buffer[i]
-        return buffer if path == buffer.name
-        i += 1
+        vim.open(path)
       end
     end
 
-    def line_number
-      buffer.line_number
+    def page_up
+      target = first_sibling? ? parent && parent.first_sibling : first_sibling
+      vim.move_to(index(target))
     end
 
-    def line_number=(line_number)
-      window.cursor = [line_number, window.cursor[1]]
-      hide_cursor
+    def page_down
+      target = last_sibling? ? parent && parent.last_sibling : last_sibling
+      vim.move_to(index(target))
     end
 
-    def render(lines)
-      unlocked do
-        maintain_line_number do
-          clear
-          lines.each { |line| append(line) }
-          # (height - lines.size).times { append('') }
-          buffer.delete(buffer.count)
+    protected
+
+      def index(node = nil)
+        list.index(node || current)
+      end
+
+      def current
+        list[line]
+      end
+
+      def toggle
+        list.toggle(line)
+        render
+      end
+
+      def open
+        list.open(line)
+        render
+      end
+
+      def close
+        list.close(line)
+        render
+        vim.move_to(list.index(current))
+      end
+
+      def close_parent
+        ix = list.index(parent)
+        list.close(ix)
+        render
+        vim.move_to(ix)
+      end
+
+      def refresh
+        maintain_current_entry do
+          @list.reset
+          render
         end
       end
-    end
 
-    def clear
-      unlocked do
-        @current_line = 0
-        exe "silent %d _"
+      def render
+        vim.draw(list.map { |node| node.to_s })
+      end
+
+      def maintain_current_entry(&block)
+        current = self.current
+        yield
+        vim.move_to(list.index(current).to_i) if current
       end
     end
-
-    def append(line)
-      line = " #{line}".ljust(window.width + 3) + ' '
-      buffer.append(@current_line, line)
-      @current_line += 1
-    end
-
-    def unlocked(&block)
-      unlock
-      yield
-      lock
-    end
-
-    def lock
-      # exe "setlocal nomodifiable"
-    end
-
-    def unlock
-      exe "setlocal modifiable"
-    end
-
-    def hide_cursor
-      exe "normal! 0" # hides the cursor
-    end
-
-    def maintain_line_number(&block)
-      _line_number = line_number
-      yield
-      self.line_number = _line_number
-    end
-
-    def create_window
-      exe "silent! botright vnew #{@title}"
-      previous!
-      exe "vertical resize 30"
-    end
-
-    def init_buffer
-      # stolen from lusty-explorer
-      exe "setlocal bufhidden=delete"
-      exe "setlocal buftype=nofile"
-      exe "setlocal noswapfile"
-      exe "setlocal nowrap"
-      exe "setlocal nonumber"
-      exe "setlocal foldcolumn=0"
-      exe "setlocal cursorline"
-      exe "setlocal nospell"
-      exe "setlocal nobuflisted"
-      exe "setlocal textwidth=0"
-      exe "set timeoutlen=0"
-      exe "set noinsertmode"
-      exe "set noshowcmd"
-      exe "set nolist"
-      exe "set report=9999"
-      exe "set sidescroll=0"
-      exe "set sidescrolloff=0"
-      exe "setlocal winfixwidth"
-      # exe "highlight Cursor gui=NONE guifg=NONE guibg=NONE"
-      # exe 'syn match FsTree ".*"'
-    end
-
-    def map_keys
-      # noop all printables
-      # printables.each_byte do |b|
-      #   map "<Char-#{b}> <Nop>"
-      # end
-
-      # Special characters
-      map_key  :Left
-      map_key  :Right
-      map_char :h,  :left
-      map_char :l,  :right
-      map_key  :CR, :toggle
-      map_char :K,  :page_up
-      map_char :J,  :page_down
-      map_char :s,  :split
-      map_char :v,  :vsplit
-      map_char :c,  :cwd
-      map_char :C,  :cwd_root
-      map_char :D,  :dive
-      map_char :U,  :surface
-      map_char :R,  :refresh
-      map "<leftrelease> :call FsTreeAction('toggle')"
-    end
-
-    def map_char(char, target = char)
-      map_key :"Char-#{char.to_s.ord}", target
-    end
-
-    def map_key(key, target = key)
-      map "<#{key}> :call FsTreeAction('#{target.to_s.downcase}')"
-    end
-
-    def map(command)
-      exe "nnoremap <silent> <buffer> #{command}<CR>"
-    end
-
-    def exe(s)
-      VIM.command s
-    end
-  end
 end

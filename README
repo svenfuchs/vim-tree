@@ -17,19 +17,21 @@ fs_tree.vim plugin file).
 
 :FsTree will open the tree menu.
 
-crsr-left  - close directory (if closed, closes the parent directory)
-crsr-right - open directory (and move into it) or file
-crsr-up    - navigate up
-crsr-down  - navigate down
-cr (enter) - toggle (open/close) directory or open file
-left-click - toggle (open/close) directory or open file
-s          - open a file with split
-v          - open a file with vsplit
-J          - make a directory the root directory
-K          - move the root directory one level up
-C          - change current working directory to root directory
-c          - change current working directory to selected directory
-R          - refresh (currently looses open directory information)
+h, crsr-left  - close directory (if closed, closes the parent directory)
+l, crsr-right - open directory (and move into it) or file
+k, crsr-up    - navigate up
+j, crsr-down  - navigate down
+K             - navigate to first sibling
+J             - navigate to last sibling
+cr (enter)    - toggle (open/close) directory or open file
+left-click    - toggle (open/close) directory or open file
+s             - open a file with split
+v             - open a file with vsplit
+u             - make a directory the root directory
+d             - move the root directory one level up
+C             - change current working directory to root directory
+c             - change current working directory to selected directory
+R             - refresh (currently looses open directory information)
 
 == Todo
 

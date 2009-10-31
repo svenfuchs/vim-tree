@@ -1,14 +1,16 @@
+require 'forwardable'
+
 module FsTree
   autoload :Directory, 'fs_tree/directory'
-  autoload :Entry,     'fs_tree/entry'
   autoload :File,      'fs_tree/file'
   autoload :List,      'fs_tree/list'
-  autoload :Pane,      'fs_tree/pane'
+  autoload :Node,      'fs_tree/node'
+  autoload :Vim,       'fs_tree/vim'
   autoload :Window,    'fs_tree/window'
 
   class << self
     def run(window, path)
-      FsTree::Window.new(window, path)
+      Window.new(Vim.new(window), path)
     end
   end
 end

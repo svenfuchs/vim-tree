@@ -1,5 +1,5 @@
 module FsTree
-  class Entry
+  class Node
     class << self
       def build(path, *args)
         klass = ::File.directory?(path) ? Directory : File
@@ -14,6 +14,10 @@ module FsTree
       @parent = parent
     end
 
+    def name
+      @name = ::File.basename(path)
+    end
+
     def level
       @level ||= parent ? parent.level + 1 : 0
     end
@@ -26,8 +30,20 @@ module FsTree
       is_a?(File)
     end
 
-    def name
-      @name = ::File.basename(path)
+    def first_sibling?
+      first_sibling == self
+    end
+
+    def first_sibling
+      parent.nil? ? self : parent.children.first
+    end
+
+    def last_sibling?
+      last_sibling == self
+    end
+
+    def last_sibling
+      parent.nil? ? self : parent.children.last
     end
 
     def to_s
@@ -36,6 +52,17 @@ module FsTree
 
     def ==(other)
       self.path == other.path
+    end
+
+    def <=>(other)
+      case true
+      when directory? && other.directory?, file? && other.file?
+        path <=> other.path
+      when directory?
+        -1
+      else
+        1
+      end
     end
   end
 end

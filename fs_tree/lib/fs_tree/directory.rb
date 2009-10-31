@@ -1,5 +1,7 @@
 module FsTree
-  class Directory < Entry
+  class Directory < Node
+    include Enumerable
+
     attr_accessor :state
 
     def initialize(path, parent = nil, state = :open)
@@ -7,30 +9,22 @@ module FsTree
       @state = state
     end
 
-    def dirname
-      path
-    end
-
     def each(&block)
       open? ? children.each(&block) : []
     end
 
-    def map(&block)
-      open? ? children.map(&block) : []
-    end
-
     def children
       @children ||= Dir["#{path}/*"].map do |path|
-        Entry.build(path, self, :closed)
-      end
+        Node.build(path, self, :closed)
+      end.sort
     end
 
     def reset
       @children = nil
     end
 
-    def to_a
-      map { |child| [child] + child.to_a }.flatten
+    def flatten
+      [self] + map { |child| child.flatten }.flatten
     end
 
     def open
@@ -47,7 +41,7 @@ module FsTree
 
     def level=(level)
       super
-      children.each { |child| child.level = level + 1 }
+      @children.each { |child| child.level = level + 1 } if @children
     end
 
     def to_s

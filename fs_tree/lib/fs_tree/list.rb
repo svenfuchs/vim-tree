@@ -1,78 +1,59 @@
 module FsTree
-  class List
-    attr_reader :root
-
+  class List < Array
     def initialize(path)
-      @root = Directory.new(path)
+      super(Directory.new(path).flatten)
     end
 
     def expand
-      @root = Directory.new(::File.dirname(@root.path))
-      reset
+      reset(Directory.new(::File.dirname(root.path)))
     end
 
-    def slice(ix)
-      if entries[ix].directory?
-        @root = entries[ix]
-        @root.state = :open
-        @root.level = 0
-        reset
-      end
+    def collapse(ix)
+      reset(self[ix]) if self[ix].directory?
     end
 
     def toggle(ix)
-      entries[ix].open? ? close(ix) : open(ix)
+      self[ix].open? ? close(ix) : open(ix)
     end
 
     def open(ix)
-      !!unless entries[ix].open?
-        entries[ix].open
-        slice = entries[ix].to_a
-        entries[ix + 1, 0] = slice
-        !slice.empty?
+      node = self[ix]
+      unless node.open?
+        node.open
+        self[ix, 1] = node.flatten
       end
     end
 
     def close(ix)
-      !!if entries[ix].open?
-        slice = entries[ix].to_a
-        entries.slice!(ix + 1, slice.size)
-        entries[ix].close
-        !slice.empty?
+      node = self[ix]
+      if node.open?
+        self[ix, node.flatten.size] = [node]
+        node.close
       end
     end
 
-    def [](ix)
-      entries[ix]
-    end
-
-    def index(entry)
-      entries.index(entry)
-    end
-
-    def each(&block)
-      entries.each(&block)
-    end
-
-    def map(&block)
-      entries.map(&block)
-    end
-
-    def reset
-      entries, @entries = @entries, nil
-      entries.each do |entry|
-        ix = index(entry)
-        open(ix) if ix && entry.open?
+    def reset(path = nil)
+      maintain_status do
+        self.root = path if path
+        replace(root.flatten)
       end
-      root.reset
     end
 
-    def entries
-      @entries ||= flatten(root)
-    end
+    protected
 
-    def flatten(entry)
-      [entry] + entry.map { |entry| flatten(entry) }.flatten
-    end
+      alias :root :first
+
+      def root=(root)
+        root.level = 0
+        root.open
+        root.reset
+        self[0] = root
+      end
+
+      def maintain_status(&block)
+        nodes = select { |node| node.open? }
+        yield
+        nodes.each { |node| ix = index(node) and open(ix) }
+      end
   end
 end
