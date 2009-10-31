@@ -54,6 +54,10 @@ module FsTree
       entries.each(&block)
     end
 
+    def map(&block)
+      entries.map(&block)
+    end
+
     def reset
       entries, @entries = @entries, nil
       entries.each do |entry|

@@ -6,7 +6,7 @@ module FsTree
       @window = window
       @list = list
       @line = 0
-      redraw
+      render
     end
 
     def root
@@ -54,17 +54,16 @@ module FsTree
     end
 
     def surface
-      keep_line_number do
+      maintain_current_entry do
         @list.expand
-        redraw
+        render
       end
     end
 
     def dive
-      keep_line_number do
-        list.slice(line)
-        redraw
-      end
+      list.slice(line)
+      render
+      window.line_number = 1
     end
 
     def toggle
@@ -113,34 +112,20 @@ module FsTree
     end
 
     def refresh
-      window.keep_line_number do
+      maintain_current_entry do
         @list.reset
-        redraw
+        render
       end
     end
 
-    def redraw
-      window.clear
-      reset
-      render
-    end
-
-    def reset
-      window.line_number = 0
-    end
-
     def render
-      line_number = window.line_number
-      window.clear
-      list.each { |entry| window.append(entry.to_s) }
-      # window.height.times { window.append('') }
-      window.line_number = line_number
+      window.render(list.map { |entry| entry.to_s })
     end
 
-    def keep_line_number(&block)
+    def maintain_current_entry(&block)
       _current = current
       yield
-      window.line_number = list.index(_current) + 1
+      window.line_number = list.index(_current).to_i + 1 if _current
     end
   end
 end

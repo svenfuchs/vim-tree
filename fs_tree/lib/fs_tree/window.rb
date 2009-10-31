@@ -12,7 +12,7 @@ module FsTree
       @pane = FsTree::Pane.new(self, FsTree::List.new(root))
       @current_line = 0
 
-      create_window if Vim::Window.count == 1 || $fs_tree.nil?
+      create_window if $fs_tree.nil?
       init_buffer
       map_keys
       lock
@@ -74,6 +74,17 @@ module FsTree
       hide_cursor
     end
 
+    def render(lines)
+      unlocked do
+        maintain_line_number do
+          clear
+          lines.each { |line| append(line) }
+          # (height - lines.size).times { append('') }
+          buffer.delete(buffer.count)
+        end
+      end
+    end
+
     def clear
       unlocked do
         @current_line = 0
@@ -82,11 +93,9 @@ module FsTree
     end
 
     def append(line)
-      unlocked do
-        line = " #{line}".ljust(window.width + 3) + ' '
-        buffer.append(@current_line, line)
-        @current_line += 1
-      end
+      line = " #{line}".ljust(window.width + 3) + ' '
+      buffer.append(@current_line, line)
+      @current_line += 1
     end
 
     def unlocked(&block)
@@ -96,7 +105,7 @@ module FsTree
     end
 
     def lock
-      exe "setlocal nomodifiable"
+      # exe "setlocal nomodifiable"
     end
 
     def unlock
@@ -105,6 +114,12 @@ module FsTree
 
     def hide_cursor
       exe "normal! 0" # hides the cursor
+    end
+
+    def maintain_line_number(&block)
+      _line_number = line_number
+      yield
+      self.line_number = _line_number
     end
 
     def create_window
