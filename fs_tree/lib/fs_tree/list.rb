@@ -1,7 +1,18 @@
 module FsTree
   class List < Array
+    extend Forwardable
+
+    def_delegators :root, :local?
+
     def initialize(path)
       super(Directory.new(path).flatten)
+    end
+
+    def find(path)
+      if local?(path) && node = root.find(path)
+        replace(root.flatten)
+        index(node)
+      end
     end
 
     def expand

@@ -22,4 +22,10 @@ class DirectoryTest < Test::Unit::TestCase
   test "flatten returns a flattened list of all open nested children" do
     assert_equal %w(a aa aa.x aa.y a.x), @directory.flatten.map { |node| node.name }
   end
+
+  test "find finds a local file and opens all enclosing closed directories" do
+    node = @directory.find(root + '/aa/aa.x')
+    assert_equal root + '/aa/aa.x', node.path
+    assert_equal %w(a aa aa.x aa.y a.x), @directory.flatten.map { |node| node.name }
+  end
 end

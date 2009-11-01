@@ -2,7 +2,9 @@
 
 VIM Filesystem Tree plugin in Ruby.
 
-Very early alpha but already (somewhat) usable.
+Less than 1000 lines of unit-tested, readable code. Yes, VIM plugins *can*
+be slick & sexy.
+
 
 == Requirements
 

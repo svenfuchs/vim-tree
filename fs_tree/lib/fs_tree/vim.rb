@@ -14,11 +14,19 @@ module FsTree
       @window = window
       @current_line = 0
 
-      create_window if $fs_tree.nil?
+      create_window if $fs_window.nil?
       init_buffer
       map_keys
       lock
       # hide_cursor
+    end
+
+    def can_sync?
+      !focussed? && !no_winenter?
+    end
+
+    def focussed?
+      $curwin == window
     end
 
     def cwd(path)
@@ -34,7 +42,7 @@ module FsTree
     end
 
     def open(path, mode = :normal)
-      target!
+      previous!
       mode = :split if mode == :normal && modified?
       command = buffer_command(path, mode) || file_command(path, mode)
       exe "silent #{command}"
@@ -69,28 +77,28 @@ module FsTree
     end
 
     def draw(lines)
-      unlocked do
-        maintain_line_number do
-          clear
-          lines.each { |line| append(line) }
-          buffer.delete(buffer.count)
+      in_fs_window do
+        unlocked do
+          maintain_line_number do
+            clear
+            lines.each { |line| append(line) }
+            buffer.delete(buffer.length)
+            # move_to(line)
+          end
         end
       end
     end
 
     protected
 
-      def target!
-        create_window if VIM::Window.count == 1
-        previous!
-      end
-
       def modified?
         VIM.evaluate('&modified') == '1'
       end
 
       def previous!
-        exe('wincmd p')
+        no_winenter do
+          exe('wincmd p')
+        end
       end
 
       def find_buffer(path)
@@ -104,11 +112,17 @@ module FsTree
 
       def clear
         @current_line = 0
-        exe "silent %d _"
+        # exe "silent %d _"
+        i = 0
+        length = buffer.length
+        while i < length
+          buffer.delete(buffer.length)
+          i += 1
+        end
       end
 
       def append(line)
-        line = " #{line}".ljust(window.width + 3) + ' '
+        line = " #{line}" # .ljust(window.width + 2)
         buffer.append(@current_line, line)
         @current_line += 1
       end
@@ -127,14 +141,38 @@ module FsTree
         exe "setlocal modifiable"
       end
 
-      # def hide_cursor
-      #   exe "normal! 0" # hides the cursor
-      # end
-
       def maintain_line_number(&block)
         line = self.line
         yield
         move_to(line)
+      end
+
+      def in_fs_window(&block)
+        in_window(window, &block)
+      end
+
+      def in_window(window, &block)
+        $curwin == window ? yield : no_winenter do
+          current = $curwin
+          window.focus
+          yield
+          current.focus
+        end
+      end
+
+      def no_winenter(&block)
+        return if no_winenter?
+        @no_winenter = true
+        yield
+        @no_winenter = false
+      end
+
+      def no_winenter?
+        !!@no_winenter
+      end
+
+      def hide_cursor
+        # exe "normal! Gg$" doesn't work
       end
 
       def create_window
@@ -163,6 +201,8 @@ module FsTree
         exe "set sidescroll=0"
         exe "set sidescrolloff=0"
         exe "setlocal winfixwidth"
+        exe ':au BufEnter * call FsTreeSync(expand("%:p"))'
+        # exe "au WinEnter * call FsTreeSync(expand('%'))"
         # exe "highlight Cursor gui=NONE guifg=NONE guibg=NONE"
         # exe 'syn match FsTree ".*"'
       end

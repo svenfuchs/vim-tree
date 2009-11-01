@@ -42,4 +42,21 @@ class ListTest < Test::Unit::TestCase
     @list.collapse(1)
     assert_equal %w(a aa aa.x aa.y a.x), @list.map { |node| node.name }
   end
+
+  test "local? is true when the given path is part of the root directory" do
+    assert @list.local?(root + '/aa')
+  end
+
+  test "local? is false when the given path is not part of the root directory" do
+    assert !@list.local?(File.expand_path(root + '/../'))
+  end
+
+  test "local? is false when the given path does not exist" do
+    assert !@list.local?(root + '/x')
+  end
+
+  test "find finds a local file and opens all enclosing closed directories" do
+    @list.find(root + '/aa/aa.x')
+    assert_equal %w(a aa aa.x aa.y a.x), @list.map { |node| node.name }
+  end
 end

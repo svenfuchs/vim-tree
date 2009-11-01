@@ -20,6 +20,13 @@ module FsTree
       send(action) if respond_to?(action)
     end
 
+    def sync(path)
+      if vim.can_sync? && ix = list.find(path)
+        vim.move_to(ix)
+        render
+      end
+    end
+
     def cwd_root
       vim.cwd(root.path)
     end

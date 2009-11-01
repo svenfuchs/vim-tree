@@ -32,4 +32,31 @@ module VIM
     # Escape slashes, open square braces, spaces, sharps, and double quotes.
     s.gsub(/\\/, '\\\\\\').gsub(/[\[ #"]/, '\\\\\0')
   end
+
+  class Window
+    class << self
+      include Enumerable
+
+      def each(&block)
+        i = 0
+        while i < count
+          yield(self[i])
+          i += 1
+        end
+      end
+
+      def index(window)
+        each_with_index { |w, ix| return ix if w == window }
+        nil
+      end
+    end
+
+    def number
+      @number ||= Window.index(self)
+    end
+
+    def focus
+      Vim.command "wincmd w" until $curwin == self
+    end
+  end
 end
