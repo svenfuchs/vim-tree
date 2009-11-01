@@ -46,6 +46,7 @@ module FsTree
     def reset(path = nil)
       maintain_status do
         self.root = path if path
+        root.reset
         replace(root.flatten)
       end
     end

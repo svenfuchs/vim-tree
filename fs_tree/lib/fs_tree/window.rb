@@ -1,30 +1,40 @@
 module FsTree
-  class Window
+  module Window
     extend Forwardable
 
-    attr_reader :vim, :list
+    attr_reader :list
 
     def_delegators :list, :root
-    def_delegators :vim, :line
     def_delegators :current, :path, :parent, :directory?, :file?, :open?,
                    :first_sibling?, :first_sibling, :last_sibling?, :last_sibling
 
-    def initialize(vim, path)
-      @vim = vim
+    def init(path, vim)
+      super(vim)
       @list = List.new(path)
-      @line = 0
-      render
     end
 
     def action(action)
       send(action) if respond_to?(action)
     end
 
-    def sync(path)
-      if vim.can_sync? && ix = list.find(path)
-        vim.move_to(ix)
+    def refresh
+      maintain_entry do
+        @list.reset
         render
       end
+    end
+
+    def sync(path)
+      if can_sync? && ix = list.find(path)
+        maintain_window do
+          move_to(ix)
+          render
+        end
+      end
+    end
+
+    def can_sync?
+      !focussed? && !vim.blocked?(:winenter)
     end
 
     def cwd_root
@@ -36,7 +46,7 @@ module FsTree
     end
 
     def expand
-      maintain_current_entry do
+      maintain_entry do
         @list.expand
         render
       end
@@ -45,7 +55,7 @@ module FsTree
     def collapse
       list.collapse(line)
       render
-      vim.move_to(0)
+      move_to(0)
     end
 
     def click
@@ -67,7 +77,7 @@ module FsTree
     def right
       if directory?
         open
-        vim.move_down
+        move_down
       else
         vim.open(path)
       end
@@ -75,12 +85,16 @@ module FsTree
 
     def page_up
       target = first_sibling? ? parent && parent.first_sibling : first_sibling
-      vim.move_to(index(target))
+      move_to(index(target))
     end
 
     def page_down
       target = last_sibling? ? parent && parent.last_sibling : last_sibling
-      vim.move_to(index(target))
+      move_to(index(target))
+    end
+
+    def render
+      super(list.map { |node| " #{node.to_s}" })
     end
 
     protected
@@ -106,31 +120,18 @@ module FsTree
       def close
         list.close(line)
         render
-        vim.move_to(list.index(current))
+        # move_to(index)
       end
 
       def close_parent
-        ix = list.index(parent)
-        list.close(ix)
-        render
-        vim.move_to(ix)
+        move_to(index(parent))
+        close
       end
 
-      def refresh
-        maintain_current_entry do
-          @list.reset
-          render
-        end
-      end
-
-      def render
-        vim.draw(list.map { |node| node.to_s })
-      end
-
-      def maintain_current_entry(&block)
+      def maintain_entry(&block)
         current = self.current
         yield
-        vim.move_to(list.index(current).to_i) if current
+        move_to(index(current).to_i) if current
       end
     end
 end

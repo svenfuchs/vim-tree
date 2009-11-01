@@ -1,6 +1,10 @@
 require File.expand_path(File.dirname(__FILE__) + '/test_helper')
 
 class WindowTest < Test::Unit::TestCase
+  def setup
+    $curwin = window
+  end
+
   test "cwd_root changes the current working directory to the current root" do
     window.cwd_root
     assert_equal 'a', File.basename(vim.working_directory)

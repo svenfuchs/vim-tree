@@ -49,16 +49,12 @@ class VimMock
   attr_reader :working_directory, :lines, :open_path, :open_mode
 
   def initialize
-    @line = 1
+    @line = 0
+    @lines = []
   end
 
   def cwd(path)
     @working_directory = path
-  end
-
-  def open(path, mode = :normal)
-    @open_path = path
-    @open_mode = mode
   end
 
   def split(path)
@@ -69,24 +65,39 @@ class VimMock
     open(path, :vsplit)
   end
 
+  def open(path, mode = :normal)
+    @open_path = path
+    @open_mode = mode
+  end
+
   def line
-    @line - 1
-  end
-
-  def move_up(distance = 1)
-    move_to(line - distance)
-  end
-
-  def move_down(distance = 1)
-    move_to(line + distance)
+    @line
   end
 
   def move_to(line)
-    @line = line + 1
+    @line = line
   end
 
-  def draw(lines)
+  def write(lines)
     @lines = lines
+  end
+
+  def local
+    yield
+  end
+
+  def block(event, &block)
+    yield
+  end
+
+  def blocked?(event)
+    false
+  end
+
+  def exe(command)
+  end
+
+  def eval(expression)
   end
 end
 

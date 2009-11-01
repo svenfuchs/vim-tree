@@ -2,7 +2,7 @@ function! s:FsTreeStart()
   ruby << RUBY
     $: << File.expand_path('~/.vim/plugin/fs_tree/lib')
     require 'fs_tree'
-    $fs_window = FsTree.run($curwin, Dir.pwd)
+    $fs_window = FsTree.run(Dir.pwd)
 RUBY
 endfunction
 
