@@ -77,7 +77,9 @@ module Vim
     end
 
     def focus(window)
-      exe "wincmd w" until $curwin == window
+      vim.block(:WinEnter) do
+        exe "wincmd w" until $curwin == window
+      end
     end
 
     def focussed?
@@ -85,7 +87,7 @@ module Vim
     end
 
     def focussed(&block)
-      $curwin == self ? yield : vim.block(:winenter) do
+      $curwin == self ? yield : begin
         current = $curwin
         focus(self)
         result = yield

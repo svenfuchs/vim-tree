@@ -8,10 +8,6 @@ module Vim
       :buff => { :normal => 'b', :split => 'sb', :vsplit => 'vert sb' }
     }
 
-    def initialize
-      @blocked = {}
-    end
-
     def cwd(path)
       exe "cd #{path}"
     end
@@ -34,22 +30,21 @@ module Vim
     end
 
     def previous!
-      block(:winenter) { exe('wincmd p') }
+      exe('wincmd p')
     end
 
     def modified?
-      eval('&modified') == '1' # should make sure that we're on the previous window
+      eval('&modified') == '1' # should make sure that we're on the correct window
     end
 
     def modifiable?
-      eval('&modifiable') == '1' # should make sure that we're on the previous window
+      eval('&modifiable') == '1' # should make sure that we're on the correct window
     end
 
     def block(event, &block)
-      return if blocked?(event)
-      @blocked[event] = true
+      old = set(:eventignore, event)
       yield
-      @blocked.delete(event)
+      set(:eventignore, old)
     end
 
     def blocked?(event)
@@ -62,6 +57,12 @@ module Vim
 
     def eval(s)
       Vim.evaluate(s)
+    end
+
+    def set(name, value)
+      old = eval("&#{name}")
+      exe "set #{name}=#{value}"
+      old
     end
 
     def buffer_command(path, mode)

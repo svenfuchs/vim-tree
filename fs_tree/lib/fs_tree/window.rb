@@ -25,16 +25,12 @@ module FsTree
     end
 
     def sync(path)
-      if can_sync? && ix = list.find(path)
+      if ix = list.find(path)
         maintain_window do
           move_to(ix)
           render
         end
       end
-    end
-
-    def can_sync?
-      !focussed? && !vim.blocked?(:winenter)
     end
 
     def cwd_root
