@@ -20,17 +20,28 @@ module Vim
       open(path, :vsplit)
     end
 
-    # bullshit. this always opens an existing buffer in the previous window.
-    # should instead focus the existing, open window if one exists.
     def open(path, mode = :normal)
-      previous!
-      mode = :split if mode == :normal && (modified? || !modifiable?)
-      command = buffer_command(path, mode) || file_command(path, mode)
-      exe "silent #{command}"
+      if mode == :normal && window = Window.find(path)
+        focus(window)
+      elsif mode == :normal && (modified? || !modifiable?)
+        open(path, :split)
+      elsif buffer = Buffer.find(path)
+        previous!
+        exe "#{COMMANDS[:buff][mode]} #{buffer.number}"
+      else
+        previous!
+        exe "#{COMMANDS[:file][mode]} #{escape(path)}"
+      end
+    end
+
+    def focus(window)
+      block_events do
+        exe "wincmd w" until $curwin == window
+      end
     end
 
     def previous!
-      exe('wincmd p')
+      block_events { exe('wincmd p') }
     end
 
     def modified?
@@ -41,8 +52,8 @@ module Vim
       eval('&modifiable') == '1' # should make sure that we're on the correct window
     end
 
-    def block(event, &block)
-      old = set(:eventignore, event)
+    def block_events(&block)
+      old = set(:eventignore, 'all')
       yield
       set(:eventignore, old)
     end
@@ -76,7 +87,7 @@ module Vim
       "#{COMMANDS[:file][mode]} #{path}"
     end
 
-    def filename_escape(s)
+    def escape(s)
       # Escape slashes, open square braces, spaces, sharps, and double quotes.
       s.gsub(/\\/, '\\\\\\').gsub(/[\[ #"]/, '\\\\\0')
     end

@@ -76,12 +76,6 @@ module Vim
       focussed { exe "setlocal modifiable" }
     end
 
-    def focus(window)
-      vim.block(:WinEnter) do
-        exe "wincmd w" until $curwin == window
-      end
-    end
-
     def focussed?
       $curwin == self
     end
@@ -89,9 +83,9 @@ module Vim
     def focussed(&block)
       $curwin == self ? yield : begin
         current = $curwin
-        focus(self)
+        vim.focus(self)
         result = yield
-        focus(current)
+        vim.focus(current)
         result
       end
     end
@@ -99,7 +93,7 @@ module Vim
     def maintain_window(&block)
       current = $curwin
       yield
-      focus(current)
+      vim.focus(current)
     end
 
     def maintain_line(&block)
