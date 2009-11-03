@@ -48,6 +48,7 @@ module FsTree
       exe "set sidescroll=0"
       exe "set sidescrolloff=0"
       exe "setlocal winfixwidth"
+      exe "setlocal laststatus=0"
       exe ':au BufEnter * call FsTreeSync(expand("%:p"))'
       # exe "au WinEnter * call FsTreeSync(expand('%'))"
       # exe "highlight Cursor gui=NONE guifg=NONE guibg=NONE"
