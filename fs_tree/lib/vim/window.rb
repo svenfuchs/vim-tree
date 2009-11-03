@@ -62,6 +62,10 @@ module Vim
       end
     end
 
+    def statusline=(line)
+      exe "set statusline=#{line}"
+    end
+
     def unlocked(&block)
       unlock
       yield
@@ -88,12 +92,6 @@ module Vim
         vim.focus(current)
         result
       end
-    end
-
-    def maintain_window(&block)
-      current = $curwin
-      yield
-      vim.focus(current)
     end
 
     def maintain_line(&block)

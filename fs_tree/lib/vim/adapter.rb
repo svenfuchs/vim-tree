@@ -44,6 +44,12 @@ module Vim
       block_events { exe('wincmd p') }
     end
 
+    def maintain_window(&block)
+      current = $curwin
+      yield
+      focus(current)
+    end
+
     def modified?
       eval('&modified') == '1' # should make sure that we're on the correct window
     end
@@ -74,17 +80,6 @@ module Vim
       old = eval("&#{name}")
       exe "set #{name}=#{value}"
       old
-    end
-
-    def buffer_command(path, mode)
-      if buffer = Vim::Buffer.find(path)
-        "#{COMMANDS[:buff][mode]} #{buffer.number}"
-      end
-    end
-
-    def file_command(path, mode)
-      path = filename_escape(path)
-      "#{COMMANDS[:file][mode]} #{path}"
     end
 
     def escape(s)

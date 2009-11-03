@@ -14,7 +14,12 @@ Test::Unit::TestCase.class_eval do
   end
 
   def window
-    @window ||= FsTree::Window.new(VimMock.new, root)
+    @window ||= begin
+      window = Vim::Window.new
+      window.extend(FsTree::Window)
+      window.init('', VimMock.new)
+      window
+    end
   end
 
   def vim
