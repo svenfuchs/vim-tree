@@ -1,7 +1,5 @@
 module Vim
   class Window
-    extend Forwardable
-
     class << self
       include Enumerable
 
@@ -24,84 +22,21 @@ module Vim
     end
 
     attr_reader :vim
-    def_delegators :vim, :exe, :eval
 
     def init(vim = nil)
-      @vim = vim
+      @vim = Adapter.new(self)
     end
 
     def number
       @number = Window.index(self) + 1
     end
 
-    def line
-      buffer.line_number - 1
-    end
-
-    def move_to(line)
-      self.cursor = [line + 1, cursor[1]]
-    end
-
-    def move_up(distance = 1)
-      move_to(line - distance)
-    end
-
-    def move_down(distance = 1)
-      move_to(line + distance)
-    end
-
-    def render(lines)
-      focussed do
-        unlocked do
-          maintain_line do
-            buffer.clear
-            lines.each_with_index { |line, ix| buffer.append(ix, line) }
-            buffer.delete(buffer.length)
-          end
-        end
-      end
-    end
-
-    def statusline=(line)
-      exe "set statusline=#{line}"
-    end
-
-    def unlocked(&block)
-      unlock
-      yield
-      lock
-    end
-
-    def lock
-      focussed { exe "setlocal nomodifiable" }
-    end
-
-    def unlock
-      focussed { exe "setlocal modifiable" }
-    end
-
     def focussed?
       vim.focussed?(self)
     end
 
-    def focussed(&block)
-      $curwin == self ? yield : begin
-        current = $curwin
-        vim.focus(self)
-        result = yield
-        vim.focus(current)
-        result
-      end
-    end
-
-    def maintain_line(&block)
-      line = self.line
-      yield
-      move_to(line)
-    end
-
-    def hide_cursor
-      # vim.exe "normal! Gg$" doesn't work
+    def method_missing(method, *args, &block)
+      vim.send(method, *args, &block)
     end
   end
 end

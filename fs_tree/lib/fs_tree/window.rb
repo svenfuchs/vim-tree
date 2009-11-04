@@ -8,7 +8,7 @@ module FsTree
     def_delegators :current, :path, :parent, :directory?, :file?, :open?,
                    :first_sibling?, :first_sibling, :last_sibling?, :last_sibling
 
-    def init(path, vim)
+    def init(path, vim = nil)
       super(vim)
       @list = List.new(path)
     end

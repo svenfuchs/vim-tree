@@ -3,10 +3,20 @@ require 'vim/buffer'
 
 module Vim
   class Adapter
+    extend Forwardable
+
     COMMANDS = {
       :file => { :normal => 'e', :split => 'sp', :vsplit => 'vs' },
       :buff => { :normal => 'b', :split => 'sb', :vsplit => 'vert sb' }
     }
+
+    attr_reader :window
+
+    def_delegators :window, :buffer
+
+    def initialize(window)
+      @window = window
+    end
 
     def cwd(path)
       exe "cd #{path}"
@@ -33,6 +43,10 @@ module Vim
       end
     end
 
+    def previous!
+      block_events { exe('wincmd p') }
+    end
+
     def focus(window)
       block_events { exe "#{window.number} wincmd w" }
     end
@@ -41,8 +55,14 @@ module Vim
       $curwin == window
     end
 
-    def previous!
-      block_events { exe('wincmd p') }
+    def focussed(&block)
+      $curwin == window ? yield : begin
+        current = $curwin
+        focus(window)
+        result = yield
+        focus(current)
+        result
+      end
     end
 
     def maintain_window(&block)
@@ -57,6 +77,58 @@ module Vim
 
     def modifiable?
       eval('&modifiable') == '1' # should make sure that we're on the correct window
+    end
+
+    def render(lines)
+      focussed do
+        unlocked do
+          maintain_line do
+            buffer.clear
+            lines.each_with_index { |line, ix| buffer.append(ix, line) }
+            buffer.delete(buffer.length)
+          end
+        end
+      end
+    end
+
+    def line
+      buffer.line_number - 1
+    end
+
+    def move_to(line)
+      window.cursor = [line + 1, window.cursor[1]]
+    end
+
+    def move_up(distance = 1)
+      move_to(line - distance)
+    end
+
+    def move_down(distance = 1)
+      move_to(line + distance)
+    end
+
+    def maintain_line(&block)
+      line = window.line
+      yield
+      move_to(line)
+    end
+
+    def unlocked(&block)
+      unlock
+      yield
+      lock
+    end
+
+    def lock
+      focussed { exe "setlocal nomodifiable" }
+    end
+
+    def unlock
+      focussed { exe "setlocal modifiable" }
+    end
+
+    def hide_cursor
+      # exe "normal! Gg$" doesn't work
     end
 
     def block_events(&block)

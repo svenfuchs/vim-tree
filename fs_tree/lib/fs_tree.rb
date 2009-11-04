@@ -24,7 +24,7 @@ module FsTree
       exe "vertical resize 30"
       window = Vim::Window[0]
       window.extend(Window)
-      window.init(path, Vim::Adapter.new)
+      window.init(path)
       window
     end
 
