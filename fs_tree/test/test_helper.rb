@@ -17,7 +17,7 @@ Test::Unit::TestCase.class_eval do
     @window ||= begin
       window = Vim::Window.new
       window.extend(FsTree::Window)
-      window.init('', VimMock.new)
+      window.init(root, VimMock.new(window))
       window
     end
   end
@@ -51,11 +51,12 @@ class VimMock
     :buff => { :normal => 'b', :split => 'sb', :vsplit => 'vert sb' }
   }
 
-  attr_reader :working_directory, :lines, :open_path, :open_mode
+  attr_reader :working_directory, :cursor, :lines, :open_path, :open_mode
 
-  def initialize
+  def initialize(window)
     @line = 0
     @lines = []
+    @cursor = [1, 1]
   end
 
   def cwd(path)
@@ -83,7 +84,7 @@ class VimMock
     @line = line
   end
 
-  def write(lines)
+  def render(lines)
     @lines = lines
   end
 

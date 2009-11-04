@@ -33,7 +33,7 @@ u             - make a directory the root directory
 d             - move the root directory one level up
 C             - change current working directory to root directory
 c             - change current working directory to selected directory
-R             - refresh (currently looses open directory information)
+R             - refresh
 
 == Todo
 
@@ -41,7 +41,6 @@ R             - refresh (currently looses open directory information)
 - map L to: recursively open all nodes under current one
 - map q to: quit tree window
 - map m to: minimize tree window
-- figure out how to delete the last line in the tree buffer
 - figure out how to map cmd-click to just activating the window
   instead of opening the node
 - extract config options

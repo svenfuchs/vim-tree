@@ -24,7 +24,7 @@ module Vim
     attr_reader :vim
 
     def init(vim = nil)
-      @vim = Adapter.new(self)
+      @vim = vim || Adapter.new(self)
     end
 
     def number
@@ -33,6 +33,14 @@ module Vim
 
     def focussed?
       vim.focussed?(self)
+    end
+
+    def move_up(distance = 1)
+      move_to(line - distance)
+    end
+
+    def move_down(distance = 1)
+      move_to(line + distance)
     end
 
     def method_missing(method, *args, &block)

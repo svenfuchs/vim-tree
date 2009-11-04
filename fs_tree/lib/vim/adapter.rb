@@ -99,14 +99,6 @@ module Vim
       window.cursor = [line + 1, window.cursor[1]]
     end
 
-    def move_up(distance = 1)
-      move_to(line - distance)
-    end
-
-    def move_down(distance = 1)
-      move_to(line + distance)
-    end
-
     def maintain_line(&block)
       line = window.line
       yield
