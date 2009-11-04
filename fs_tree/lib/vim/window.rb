@@ -24,14 +24,14 @@ module Vim
     end
 
     attr_reader :vim
-    def_delegators :vim, :focussed?, :exe, :eval
+    def_delegators :vim, :exe, :eval
 
     def init(vim = nil)
       @vim = vim
     end
 
     def number
-      @number ||= Window.index(self)
+      @number = Window.index(self) + 1
     end
 
     def line
@@ -81,7 +81,7 @@ module Vim
     end
 
     def focussed?
-      $curwin == self
+      vim.focussed?(self)
     end
 
     def focussed(&block)

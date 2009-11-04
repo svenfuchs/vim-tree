@@ -21,23 +21,24 @@ module Vim
     end
 
     def open(path, mode = :normal)
+      previous! if focussed?
       if mode == :normal && window = Window.find(path)
         focus(window)
       elsif mode == :normal && (modified? || !modifiable?)
         open(path, :split)
       elsif buffer = Buffer.find(path)
-        previous!
         exe "#{COMMANDS[:buff][mode]} #{buffer.number}"
       else
-        previous!
         exe "#{COMMANDS[:file][mode]} #{escape(path)}"
       end
     end
 
     def focus(window)
-      block_events do
-        exe "wincmd w" until $curwin == window
-      end
+      block_events { exe "#{window.number} wincmd w" }
+    end
+
+    def focussed?(window = $fs_window)
+      $curwin == window
     end
 
     def previous!
@@ -59,13 +60,22 @@ module Vim
     end
 
     def block_events(&block)
-      old = set(:eventignore, 'all')
-      yield
-      set(:eventignore, old)
+      with_setting(:eventignore, 'all', &block)
     end
 
-    def blocked?(event)
-      !!@blocked[event]
+    def with_settings(*settings, &block)
+      setting = settings.pop
+      if settings.empty?
+        with_setting(*setting, &block)
+      else
+        with_settings(*settings, &lambda { with_setting(*setting, &block) })
+      end
+    end
+
+    def with_setting(name, value, &block)
+      old = set(name, value)
+      yield
+      set(name, old)
     end
 
     def exe(s)

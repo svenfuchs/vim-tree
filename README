@@ -37,8 +37,6 @@ R             - refresh (currently looses open directory information)
 
 == Todo
 
-- map K to: go to first sibling in directory
-- map J to: go to last sibling in directory
 - map H to: recursively close all nodes below current one
 - map L to: recursively open all nodes under current one
 - map q to: quit tree window
