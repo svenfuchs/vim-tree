@@ -27,19 +27,19 @@ module FsTree
       self[ix].open? ? close(ix) : open(ix)
     end
 
-    def open(ix)
+    def open(ix, options = {})
       node = self[ix]
       unless node.open?
-        node.open
+        node.open(options)
         self[ix, 1] = node.flatten
       end
     end
 
-    def close(ix)
+    def close(ix, options = {})
       node = self[ix]
       if node.open?
         self[ix, node.flatten.size] = [node]
-        node.close
+        node.close(options)
       end
     end
 

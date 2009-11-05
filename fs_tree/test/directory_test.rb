@@ -28,4 +28,20 @@ class DirectoryTest < Test::Unit::TestCase
     assert_equal root + '/aa/aa.x', node.path
     assert_equal %w(a aa aa.x aa.y a.x), @directory.flatten.map { |node| node.name }
   end
+
+  test "open(:recursive => true) opens all children recursively" do
+    @directory.close(:recursive => true)
+    @directory.open(:recursive => true)
+    assert_equal %w(a aa aa.x aa.y a.x), @directory.flatten.map { |node| node.name }
+    assert @directory.open?
+    assert @directory.find(root + '/aa').open?
+  end
+
+  test "close(:recursive => true) closes all children recursively" do
+    @directory.open(:recursive => true)
+    @directory.close(:recursive => true)
+
+    assert !@directory.open?
+    assert !@directory.find(root + '/aa').open?
+  end
 end

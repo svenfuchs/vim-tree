@@ -59,11 +59,15 @@ module FsTree
       #   map "<Char-#{b}> <Nop>"
       # end
 
-      # Special characters
-      map_key  :Left
-      map_key  :Right
+      map_key  :left,      :left
+      map_key  :right,     :right
+      map_key  :'s-left',  :shift_left
+      map_key  :'s-right', :shift_right
+
       map_char :h,  :left
       map_char :l,  :right
+      map_char :H,  :shift_left
+      map_char :L,  :shift_right
       map_key  :CR, :click
       map_char :K,  :page_up
       map_char :J,  :page_down
@@ -74,6 +78,7 @@ module FsTree
       map_char :u,  :expand
       map_char :d,  :collapse
       map_char :R,  :refresh
+      # map <a-leftmouse> # only activate window
       map "<leftrelease> :call FsTreeAction('click')"
     end
 

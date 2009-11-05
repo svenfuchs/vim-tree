@@ -70,6 +70,10 @@ module FsTree
       open? ? close : close_parent
     end
 
+    def shift_left
+      close(:recursive => true)
+    end
+
     def right
       if directory?
         open
@@ -77,6 +81,10 @@ module FsTree
       else
         vim.open(path)
       end
+    end
+
+    def shift_right
+      open(:recursive => true)
     end
 
     def page_up
@@ -108,13 +116,13 @@ module FsTree
         render
       end
 
-      def open
-        list.open(line)
+      def open(options = {})
+        list.open(line, options)
         render
       end
 
-      def close
-        list.close(line)
+      def close(options = {})
+        list.close(line, options)
         render
         # move_to(index)
       end

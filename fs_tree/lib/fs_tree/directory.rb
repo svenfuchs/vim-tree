@@ -30,6 +30,14 @@ module FsTree
       end.sort
     end
 
+    def directories
+      children.select { |child| child.directory? }
+    end
+
+    def known_directories
+      (@children || []).select { |child| child.directory? }
+    end
+
     def reset
       @children = nil
     end
@@ -38,11 +46,13 @@ module FsTree
       [self] + map { |child| child.flatten }.flatten
     end
 
-    def open
+    def open(options = {})
+      directories.each { |directory| directory.open(options) } if options[:recursive]
       @state = :open
     end
 
-    def close
+    def close(options = {})
+      known_directories.each { |directory| directory.close(options) } if options[:recursive]
       @state = :closed
     end
 
