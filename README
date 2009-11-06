@@ -36,10 +36,10 @@ d              - move the root directory one level up
 C              - change current working directory to root directory
 c              - change current working directory to selected directory
 R              - refresh
+q              - quit
 
 == Todo
 
-- map q to: quit tree window
 - map m to: minimize tree window
 - figure out how to map cmd-click to just activating the window
   instead of opening the node

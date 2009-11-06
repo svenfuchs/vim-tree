@@ -18,6 +18,11 @@ module Vim
       @window = window
     end
 
+    def quit
+      $fs_window = nil
+      exe "wincmd q"
+    end
+
     def cwd(path)
       exe "cd #{path}"
     end

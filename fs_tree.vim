@@ -6,9 +6,13 @@ function! s:FsTreeStart()
 RUBY
 endfunction
 
+" function! FsTreeCleanup()
+"  ruby $fs_window.validate if $fs_window
+" endfunction
+
 function! FsTreeAction(action)
   ruby action = Vim.evaluate("a:action")
-  ruby $fs_window.action(action)
+  ruby $fs_window.action(action) if $fs_window
 endfunction
 
 function! FsTreeSync(path)

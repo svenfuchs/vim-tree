@@ -11,7 +11,7 @@ module FsTree
 
   class << self
     def run(path)
-      # window = $fs_window ? $fs_window : create_window(path)
+      return $fs_window if $fs_window && $fs_window.valid?
       window = create_window(path)
       init_buffer
       window.render
@@ -50,6 +50,7 @@ module FsTree
       exe "setlocal winfixwidth"
       # exe "setlocal laststatus=0"
       exe ':au BufEnter * call FsTreeSync(expand("%:p"))'
+      # exe ':au BufDelete * call FsTreeCleanup()'
       # exe "au WinEnter * call FsTreeSync(expand('%'))"
       # exe "highlight Cursor gui=NONE guifg=NONE guibg=NONE"
       # exe 'syn match FsTree ".*"'
@@ -78,9 +79,16 @@ module FsTree
       map_char :u,  :expand
       map_char :d,  :collapse
       map_char :R,  :refresh
+      map_char :q,  :quit
+
       # map <a-leftmouse> # only activate window
       map "<leftrelease> :call FsTreeAction('click')"
     end
+
+    # def cleanup
+    #   # remove autocommand BufEnter ?
+    #   $fs_tree = nil
+    # end
 
     def map_char(char, target = char)
       map_key :"Char-#{char.to_s.ord}", target

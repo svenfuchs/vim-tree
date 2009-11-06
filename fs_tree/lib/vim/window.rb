@@ -27,8 +27,16 @@ module Vim
       @vim = vim || Adapter.new(self)
     end
 
+    def valid?
+      !!line rescue false
+    end
+
+    def index
+      Window.index(self)
+    end
+
     def number
-      @number = Window.index(self) + 1
+      @number = index + 1
     end
 
     def focussed?
@@ -45,6 +53,10 @@ module Vim
 
     def method_missing(method, *args, &block)
       vim.send(method, *args, &block)
+    end
+
+    def respond_to?(method)
+      vim.respond_to?(method) || super
     end
   end
 end

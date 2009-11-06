@@ -14,22 +14,26 @@ module FsTree
     end
 
     def action(action)
-      send(action) if respond_to?(action)
+      send(action) if validate && respond_to?(action)
+    end
+
+    def validate
+      valid? || !!($fs_tree = nil)
+    end
+
+    def sync(path)
+      if validate && ix = list.find(path)
+        vim.maintain_window do
+          move_to(ix)
+          render
+        end
+      end
     end
 
     def refresh
       maintain_entry do
         @list.reset
         render
-      end
-    end
-
-    def sync(path)
-      if ix = list.find(path)
-        vim.maintain_window do
-          move_to(ix)
-          render
-        end
       end
     end
 
