@@ -17,7 +17,7 @@ module Vim
       end
 
       def find(path)
-        detect { |window| window.buffer.name == path }
+        detect { |window| window.buffer && window.buffer.name == path }
       end
 
       def loaded?(path)
@@ -35,12 +35,9 @@ module Vim
       !!line rescue false
     end
 
-    def index
-      Window.index(self)
-    end
-
     def number
-      @number = index + 1
+      index = Window.index(self)
+      index ? index + 1 : nil
     end
 
     def focussed?

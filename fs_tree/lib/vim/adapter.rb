@@ -36,20 +36,28 @@ module Vim
     end
 
     def open(path, mode = :normal)
-      previous! if focussed?
       if mode == :normal && window = Window.find(path)
         focus(window)
-      elsif mode == :normal && (modified? || !modifiable?)
+      elsif mode == :normal and can_load?($fs_previous)
         open(path, :split)
       elsif buffer = Buffer.find(path)
+        focus($fs_previous)
         exe "#{COMMANDS[:buff][mode]} #{buffer.number}"
       else
+        focus($fs_previous)
         exe "#{COMMANDS[:file][mode]} #{escape(path)}"
       end
     end
 
     def previous!
       block_events { exe('wincmd p') }
+    end
+
+    def previous
+      previous!
+      previous = $curwin
+      previous!
+      previous
     end
 
     def focus(window)
@@ -60,8 +68,9 @@ module Vim
       $curwin == window
     end
 
-    def focussed(&block)
-      $curwin == window ? yield : begin
+    def focussed(window = nil, &block)
+      window ||= self.window
+      $curwin == window ? yield : block_events do
         current = $curwin
         focus(window)
         result = yield
@@ -76,12 +85,16 @@ module Vim
       focus(current)
     end
 
-    def modified?
-      eval('&modified') == '1' # should make sure that we're on the correct window
+    def can_load?(window = nil)
+      modified?($fs_previous) && !modifiable?($fs_previous)
     end
 
-    def modifiable?
-      eval('&modifiable') == '1' # should make sure that we're on the correct window
+    def modified?(window = nil)
+      focussed(window || self.window) { eval('&modified') == '1' }
+    end
+
+    def modifiable?(window = nil)
+      focussed(window || self.window) { eval('&modifiable') == '1' }
     end
 
     def render(lines)

@@ -14,15 +14,13 @@ module FsTree
     end
 
     def action(action)
-      send(action) if validate && respond_to?(action)
-    end
-
-    def validate
-      valid? || !!($fs_tree = nil)
+      if validate && respond_to?(action)
+        $fs_previous = previous
+        send(action)
+      end
     end
 
     def sync(path)
-      return
       if validate && ix = list.find(path)
         vim.maintain_window do
           move_to(ix)
@@ -107,6 +105,10 @@ module FsTree
     end
 
     protected
+
+      def validate
+        valid? || !!($fs_tree = nil)
+      end
 
       def index(node = nil)
         list.index(node || current)

@@ -17,7 +17,7 @@ endfunction
 
 function! FsTreeSync(path)
   ruby path = VIM.evaluate("a:path")
-  ruby $fs_window.sync(path) if $fs_window
+  ruby $fs_window.sync(path) if $fs_window && $fs_window != $curwin
 endfunction
 
 function! s:FsTreeReloadLib()

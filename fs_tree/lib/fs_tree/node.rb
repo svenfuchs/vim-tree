@@ -51,7 +51,7 @@ module FsTree
     end
 
     def ==(other)
-      self.path == other.path
+      self.path == other.path if other
     end
 
     def <=>(other)
