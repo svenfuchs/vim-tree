@@ -29,7 +29,6 @@ module FsTree
     end
 
     def init_buffer
-      # stolen from lusty-explorer
       exe "setlocal bufhidden=delete"
       exe "setlocal buftype=nofile"
       exe "setlocal noswapfile"
@@ -48,17 +47,22 @@ module FsTree
       exe "set sidescroll=0"
       exe "set sidescrolloff=0"
       exe "setlocal winfixwidth"
-      # exe "setlocal laststatus=0"
-      exe ':au BufEnter * call FsTreeSync(expand("%:p"))'
-      # exe ':au BufDelete * call FsTreeCleanup()'
-      # exe "au WinEnter * call FsTreeSync(expand('%'))"
-      # exe "highlight Cursor gui=NONE guifg=NONE guibg=NONE"
-      # exe 'syn match FsTree ".*"'
+      exe ':au BufEnter * call FsTreeSync(expand("%:p"))' # FocusGained ?
 
-      # noop all printables
-      # printables.each_byte do |b|
-      #   map "<Char-#{b}> <Nop>"
-      # end
+      # exe 'syn match fsTree ".*"'
+      exe 'syn match fsDir             "^.*[▸|▾]+.*$" contains=fsDirHandle,fsDirHandleOpen,fsDirHandleClosed'
+      exe 'syn match fsDirOpen         "^.*[▾]+.*$"   contains=fsDirHandle,fsDirHandleOpen,fsDirHandleClosed'
+      exe 'syn match fsDirClosed       "^.*[▸]+.*$"   contains=fsDirHandle,fsDirHandleOpen,fsDirHandleClosed'
+      exe 'syn match fsDirHandle       contained "[▸|▾]+"'
+      exe 'syn match fsDirHandleOpen   contained "▾"'
+      exe 'syn match fsDirHandleClosed contained "▸"'
+      exe 'syn match fsBufferLoaded    "^.*·.*$" contains=fsDot'
+      exe 'syn match fsDot             contained "·"'
+      exe 'hi def link fsDot           Ignore'
+      exe 'hi def link fsBufferLoaded  Identifier'
+      # exe "hi Cursor gui=NONE guifg=NONE guibg=NONE"
+      # let b:current_syntax = "fs_tree"
+      # exe "color fs_tree"
 
       map_key  :left,      :left
       map_key  :right,     :right

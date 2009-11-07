@@ -19,6 +19,10 @@ module Vim
       def find(path)
         detect { |window| window.buffer.name == path }
       end
+
+      def loaded?(path)
+        !!find(path)
+      end
     end
 
     attr_reader :vim

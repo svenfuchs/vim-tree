@@ -14,6 +14,10 @@ module Vim
       def find(path)
         detect { |buffer| buffer.name == path }
       end
+
+      def loaded?(path)
+        !!find(path)
+      end
     end
 
     def clear

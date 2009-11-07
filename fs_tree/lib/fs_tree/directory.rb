@@ -16,7 +16,7 @@ module FsTree
     def find(path)
       paths = path.sub("#{self.path}/", '').split('/')
       path  = "#{self.path}/#{paths.shift}"
-      open if child = children.detect { |child| child.path == path }
+      open if child = children.detect { |child| child && child.path == path }
       paths.empty? ? child : child && child.find(paths.join('/'))
     end
 

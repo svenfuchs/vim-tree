@@ -4,6 +4,10 @@ module FsTree
       false
     end
 
+    def loaded?
+      Vim::Window.loaded?(path)
+    end
+
     def dirname
       ::File.dirname(path)
     end
@@ -17,7 +21,7 @@ module FsTree
     end
 
     def to_s
-      '  ' * level + "  #{name}"
+      '  ' * level + "  #{name}" + (loaded? ? ' ·' : '')
     end
   end
 end

@@ -22,6 +22,7 @@ module FsTree
     end
 
     def sync(path)
+      return
       if validate && ix = list.find(path)
         vim.maintain_window do
           move_to(ix)
