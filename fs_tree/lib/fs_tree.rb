@@ -16,6 +16,7 @@ module FsTree
       init_buffer
       window.render
       window.lock
+      window.cwd_root
       window
     end
 

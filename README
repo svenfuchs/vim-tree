@@ -17,30 +17,42 @@ fs_tree.vim plugin file).
 
 == Usage
 
-:FsTree will open the tree menu.
+This will open the tree window:
 
-h, crsr-left   - close directory (if closed, closes the parent directory)
-l, crsr-right  - open directory (and move into it) or file
-H, shift-left  - recursively open directory
-L, shift-right - recursively close directory
-k, crsr-up     - navigate up
-j, crsr-down   - navigate down
-K, shift-up    - navigate to first sibling
-J, shift-down  - navigate to last sibling
-cr (enter)     - toggle (open/close) directory or open file
-left-click     - toggle (open/close) directory or open file
-s              - open a file with split
-v              - open a file with vsplit
-u              - make a directory the root directory
-d              - move the root directory one level up
-C              - change current working directory to root directory
-c              - change current working directory to selected directory
-R              - refresh
-q              - quit
+  :FsTree
+
+If you provide a path as an argument (you can use auto-completition here) then
+FsTree will set the current working directory to that path and open with it as
+a root path:
+
+  :FsTree ~/Development/vim/fs_tree
+
+The following keys work in the tree window:
+
+  h, crsr-left   - close directory (if closed, closes the parent directory)
+  l, crsr-right  - open directory (and move into it) or file
+  H, shift-left  - recursively open directory
+  L, shift-right - recursively close directory
+  k, crsr-up     - navigate up
+  j, crsr-down   - navigate down
+  K, shift-up    - navigate to first sibling
+  J, shift-down  - navigate to last sibling
+  cr (enter)     - toggle (open/close) directory or open file
+  left-click     - toggle (open/close) directory or open file
+  s              - open a file with split
+  v              - open a file with vsplit
+  u              - make a directory the root directory
+  d              - move the root directory one level up
+  C              - change current working directory to root directory
+  c              - change current working directory to selected directory
+  R              - refresh
+  q              - quit
 
 == Todo
 
 - map m to: minimize tree window
+- figure out how to have a fs_tree filetype and syntax in order to hide the
+  cursor locally in the fs_tree window
 - figure out how to map cmd-click to just activating the window
   instead of opening the node
 - extract config options

@@ -1,8 +1,9 @@
-function! s:FsTreeStart()
+function! s:FsTreeStart(path)
   ruby << RUBY
     $: << File.expand_path('~/.vim/plugin/fs_tree/lib')
     require 'fs_tree'
-    $fs_window = FsTree.run(Dir.pwd)
+    path = Vim.evaluate('a:path')
+    $fs_window = FsTree.run(path.empty? ? Dir.pwd : path)
 RUBY
 endfunction
 
@@ -27,7 +28,7 @@ function! s:FsTreeReloadLib()
 RUBY
 endfunction
 
-command! FsTree :call <SID>FsTreeStart()
+command! -nargs=? -complete=dir FsTree :call <SID>FsTreeStart("<args>")
 command! FsTreeReloadLib :call <SID>FsTreeReloadLib()
 
 
