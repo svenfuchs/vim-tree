@@ -43,9 +43,9 @@ module FsTree
       end
     end
 
-    def reset(path = nil)
+    def reset(directory = nil)
       maintain_status do
-        self.root = path if path
+        self.root = directory if directory
         root.reset
         replace(root.flatten)
       end
@@ -56,6 +56,7 @@ module FsTree
       alias :root :first
 
       def root=(root)
+        root.parent = nil
         root.level = 0
         root.open
         root.reset
