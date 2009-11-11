@@ -74,7 +74,8 @@ module FsTree
     end
 
     def shift_left
-      close(:recursive => true)
+      options = { :recursive => true }
+      open? ? close(options) : close_parent(options)
     end
 
     def right
@@ -134,9 +135,9 @@ module FsTree
         # move_to(index)
       end
 
-      def close_parent
+      def close_parent(options = {})
         move_to(index(parent))
-        close
+        close(options)
       end
 
       def maintain_entry(&block)

@@ -64,7 +64,6 @@ The following groups are matched for highlighting (styling) the tree window.
 
 == Todo
 
-- make H close the parent dir recursively when current dir is already closed
 - map m to: minimize tree window
 - figure out how to have a fs_tree filetype and syntax in order to hide the
   cursor locally in the fs_tree window
