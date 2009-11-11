@@ -60,7 +60,8 @@ module Vim
       previous
     end
 
-    def focus(window)
+    def focus(window = nil)
+      window ||= self.window
       block_events { exe "#{window.number} wincmd w" }
     end
 
@@ -102,7 +103,9 @@ module Vim
         unlocked do
           maintain_line do
             buffer.clear
-            lines.each_with_index { |line, ix| buffer.append(ix, line) }
+            lines.each_with_index do |line, ix|
+              buffer.append(ix, line.ljust(window.width + 10))
+            end
             buffer.delete(buffer.length)
           end
         end

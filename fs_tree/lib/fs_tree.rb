@@ -14,6 +14,8 @@ module FsTree
       return $fs_window if $fs_window && $fs_window.valid?
       window = create_window(path)
       init_buffer
+      init_highlighting
+      init_keys
       window.render
       window.lock
       window.cwd_root
@@ -49,12 +51,15 @@ module FsTree
       exe "set sidescrolloff=0"
       exe "setlocal winfixwidth"
       exe ':au BufEnter * call FsTreeSync(expand("%:p"))' # FocusGained ?
+      # exe ':au SessionLoadPost call FsTreeSessionLoaded()'
+    end
 
-      # exe 'syn match fsTree ".*"'
-      exe 'syn match fsDir             "^.*[▸|▾]+.*$" contains=fsDirHandle,fsDirHandleOpen,fsDirHandleClosed'
-      exe 'syn match fsDirOpen         "^.*[▾]+.*$"   contains=fsDirHandle,fsDirHandleOpen,fsDirHandleClosed'
-      exe 'syn match fsDirClosed       "^.*[▸]+.*$"   contains=fsDirHandle,fsDirHandleOpen,fsDirHandleClosed'
-      exe 'syn match fsDirHandle       contained "[▸|▾]+"'
+    def init_highlighting
+      exe 'syn match fsTree ".*"'
+      exe 'syn match fsDir             "^.*\(▸\|▾\).*$"      contains=fsDirHandle,fsDirOpen'
+      exe 'syn match fsDirOpen         "^.*▾.*$"             contains=fsDirHandleOpen'
+      exe 'syn match fsDirClosed       "^.*▸.*$"             contains=fsDirHandleClosed'
+      exe 'syn match fsDirHandle       contained "\(▸\|▾\)+" contains=fsDirHandleOpen,fsDirHandleClosed'
       exe 'syn match fsDirHandleOpen   contained "▾"'
       exe 'syn match fsDirHandleClosed contained "▸"'
       exe 'syn match fsBufferLoaded    "^.*·.*$" contains=fsDot'
@@ -64,7 +69,9 @@ module FsTree
       # exe "hi Cursor gui=NONE guifg=NONE guibg=NONE"
       # let b:current_syntax = "fs_tree"
       # exe "color fs_tree"
+    end
 
+    def init_keys
       map_key  :left,      :left
       map_key  :right,     :right
       map_key  :'s-left',  :shift_left

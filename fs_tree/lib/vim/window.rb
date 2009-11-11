@@ -40,6 +40,10 @@ module Vim
       index ? index + 1 : nil
     end
 
+    def focus
+      vim.focus(self)
+    end
+
     def focussed?
       vim.focussed?(self)
     end

@@ -1,9 +1,19 @@
 function! s:FsTreeStart(path)
   ruby << RUBY
-    $: << File.expand_path('~/.vim/plugin/fs_tree/lib')
-    require 'fs_tree'
-    path = Vim.evaluate('a:path')
-    $fs_window = FsTree.run(path.empty? ? Dir.pwd : path)
+    if $fs_window
+      $fs_window.focus()
+    else
+      $: << File.expand_path('~/.vim/plugin/fs_tree/lib')
+      require 'fs_tree'
+      path = Vim.evaluate('a:path')
+      $fs_window = FsTree.run(path.empty? ? Dir.pwd : path)
+    end
+RUBY
+endfunction
+
+function! s:FsTreeSessionLoaded()
+  ruby << RUBY
+    p 'session loaded'
 RUBY
 endfunction
 
@@ -31,4 +41,6 @@ endfunction
 command! -nargs=? -complete=dir FsTree :call <SID>FsTreeStart("<args>")
 command! FsTreeReloadLib :call <SID>FsTreeReloadLib()
 
+exe "map <c-f> <esc>:FsTree<CR>"
+exe "imap <c-f> <esc>:FsTree<CR>"
 
