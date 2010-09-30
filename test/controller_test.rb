@@ -1,36 +1,36 @@
-require File.expand_path('../../test_helper', __FILE__)
+require File.expand_path('../test_helper', __FILE__)
 
-class ControllerTreeTest < Test::Unit::TestCase
+class ControllerTest < Test::Unit::TestCase
   attr_reader :buffer, :window, :controller, :model, :view
 
   def setup
     super
     @buffer = Mocks::Buffer.new
     @window = Mocks::Window.new(buffer)
-    @controller = Controller::Tree.new(window, root)
+    @controller = Controller.new(window, root)
   end
 
   test "ensure the root directory is open, everything else is closed and the cursor on in the first line" do
     controller.render
     assert_equal '▾ root  ▸ bar  ▸ foo', buffer.join
-    assert_equal 0, controller.current_line
+    assert_equal 0, controller.line_number
   end
 
   test 'move_to moves the cursor to the given line' do
     controller.move_to(4)
-    assert_equal 4, controller.current_line
+    assert_equal 4, controller.line_number
   end
 
   test 'move_down moves the cursor down by one line' do
     controller.move_to(0)
     3.times { controller.move_down }
-    assert_equal 3, controller.current_line
+    assert_equal 3, controller.line_number
   end
 
   test 'move_up moves the cursor up by one line' do
     controller.move_to(4)
     3.times { controller.move_up }
-    assert_equal 1, controller.current_line
+    assert_equal 1, controller.line_number
   end
 
   test 'left closes the current directory if the current directory is open' do
@@ -54,7 +54,7 @@ class ControllerTreeTest < Test::Unit::TestCase
     controller.move_to(2)
     controller.left
     assert_equal '▸ root', buffer.join
-    assert_equal 0, controller.current_line
+    assert_equal 0, controller.line_number
   end
 
   test 'right opens the current directory if it is closed and moves the cursor down by one line' do
@@ -62,7 +62,7 @@ class ControllerTreeTest < Test::Unit::TestCase
     assert_equal '▸ root', buffer.join
     controller.right
     assert_equal '▾ root  ▸ bar  ▸ foo', buffer.join
-    assert_equal 1, controller.current_line
+    assert_equal 1, controller.line_number
   end
 
   # TODO split, vsplit

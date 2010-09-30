@@ -29,6 +29,7 @@ module VimTree
       end
 
       def index(node)
+        node = find(node) unless node.is_a?(Node)
         flatten.index(node)
       end
 
@@ -68,7 +69,7 @@ module VimTree
         state == :open
       end
 
-      def reset(root = nil)
+      def reset(root = self)
         # maintain_status do
           @path = root.to_s if root
           @children = nil

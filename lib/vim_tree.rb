@@ -9,65 +9,86 @@ module VimTree
   autoload :Model,      'vim_tree/model'
   autoload :View,       'vim_tree/view'
 
+  extend Vim
+
   class << self
+    attr_accessor :last_window
+
+    def store_last_window
+      self.last_window = previous
+    end
+
+    def valid?
+      $vim_tree.window.valid?
+    end
+
+    def focus
+      $vim_tree.window.focus
+    end
+
+    def close
+      $vim_tree.window.close
+      $vim_tree = nil
+    end
+
+    # init the top/leftmost window as a tree window
+    # use it as a view?
     def run(root)
-      return $fs_window if $fs_window && $fs_window.valid?
+      return $vim_tree if $vim_tree # && $vim_tree.valid?
 
       Vim.cwd(root)
 
       init_window
       init_buffer
-      init_highlighting
+      # init_highlighting
       init_keys
 
-      controller = VimTree::Controller::Tree.new(Vim::Window[0], root)
-      controller.render
-      controller
+      $vim_tree = Controller.new(Window[0], root)
+      $vim_tree.render
     end
 
     def init_window
-      exe "silent! topleft vnew #{@title}"
-      exe "vertical resize 30"
+      cmd "silent! topleft vnew #{@title}"
+      cmd "vertical resize 30"
     end
 
     def init_buffer
-      exe "setlocal bufhidden=delete"
-      exe "setlocal buftype=nofile"
-      exe "setlocal noswapfile"
-      exe "setlocal nowrap"
-      exe "setlocal nonumber"
-      exe "setlocal foldcolumn=0"
-      exe "setlocal cursorline"
-      exe "setlocal nospell"
-      exe "setlocal nobuflisted"
-      exe "setlocal textwidth=0"
-      exe "set timeoutlen=0"
-      exe "set noinsertmode"
-      exe "set noshowcmd"
-      exe "set nolist"
-      exe "set report=9999"
-      exe "set sidescroll=0"
-      exe "set sidescrolloff=0"
-      exe "setlocal winfixwidth"
-      # exe ':au BufEnter * call FsTreeSync(expand("%:p"))' # FocusGained ?
-      # exe ':au SessionLoadPost call FsTreeSessionLoaded()'
+      cmd "setlocal bufhidden=delete"
+      cmd "setlocal buftype=nofile"
+      cmd "setlocal noswapfile"
+      cmd "setlocal nowrap"
+      cmd "setlocal nonumber"
+      cmd "setlocal foldcolumn=0"
+      cmd "setlocal cursorline"
+      cmd "setlocal nospell"
+      cmd "setlocal nobuflisted"
+      cmd "setlocal textwidth=0"
+      cmd "set noinsertmode"
+      cmd "set noshowcmd"
+      cmd "set nolist"
+      cmd "set report=9999"
+      cmd "set sidescroll=0"
+      cmd "set sidescrolloff=0"
+      cmd "setlocal winfixwidth"
+      cmd ':au BufEnter * call VimTreeSync(expand("%:p"))'
+      # cmd ':au SessionLoadPost call FsTreeSessionLoaded()'
     end
 
     def init_highlighting
-      exe 'syn match fsTree ".*"'
-      exe 'syn match fsDir             "^.*\(▸\|▾\).*$"      contains=fsDirHandle,fsDirOpen'
-      exe 'syn match fsDirOpen         "^.*▾.*$"             contains=fsDirHandleOpen'
-      exe 'syn match fsDirClosed       "^.*▸.*$"             contains=fsDirHandleClosed'
-      exe 'syn match fsDirHandle       contained "\(▸\|▾\)+" contains=fsDirHandleOpen,fsDirHandleClosed'
-      exe 'syn match fsDirHandleOpen   contained "▾"'
-      exe 'syn match fsDirHandleClosed contained "▸"'
-      exe 'syn match fsBufferLoaded    "^.*·.*$" contains=fsDot'
-      exe 'syn match fsDot             contained "·"'
-      exe 'hi def link fsDot           Ignore'
-      exe 'hi def link fsBufferLoaded  Identifier'
-      # exe "hi Cursor gui=NONE guifg=NONE guibg=NONE"
-      # let b:current_syntax = "fs_tree"
-      # exe "color fs_tree"
+      cmd 'syn match vimTree ".*"'
+      cmd 'syn match vimDir             "^.*\(▸\|▾\).*$"      contains=vimDirHandle,vimDirOpen'
+      cmd 'syn match vimDirOpen         "^.*▾.*$"             contains=vimDirHandleOpen'
+      cmd 'syn match vimDirClosed       "^.*▸.*$"             contains=vimDirHandleClosed'
+      cmd 'syn match vimDirHandle       contained "\(▸\|▾\)+" contains=vimDirHandleOpen,vimDirHandleClosed'
+      cmd 'syn match vimDirHandleOpen   contained "▾"'
+      cmd 'syn match vimDirHandleClosed contained "▸"'
+      cmd 'syn match vimBufferLoaded    "^.*·.*$" contains=vimDot'
+      cmd 'syn match vimDot             contained "·"'
+      cmd 'hi def link vimDot           Ignore'
+      cmd 'hi def link vimBufferLoaded  Identifier'
+      # cmd "hi Cursor gui=NONE guifg=NONE guibg=NONE"
+      # let b:current_syntax = "vim_tree"
+      # cmd "color vim_tree"
     end
 
     def init_keys
@@ -89,34 +110,15 @@ module VimTree
       map_char :v,  :vsplit
       map_char :c,  :cwd
       map_char :C,  :cwd_root
+      map_char :i,  :move_in
       map_char :u,  :move_out
-      map_char :d,  :move_in
       map_char :R,  :refresh
-      map_char :q,  :quit
+      map_char :T,  :focus,  :buffer => false
+      map_char :M,  :toggle, :buffer => false
+      map_char :Q,  :quit
 
       # map <a-leftmouse> # only activate window
       map "<leftrelease> :call VimTreeAction('click')"
-    end
-
-    # def cleanup
-    #   # remove autocommand BufEnter ?
-    #   $fs_tree = nil
-    # end
-
-    def map_char(char, target = char)
-      map_key :"Char-#{char.to_s.ord}", target
-    end
-
-    def map_key(key, target = key)
-      map "<#{key}> :call VimTreeAction('#{target.to_s.downcase}')"
-    end
-
-    def map(command)
-      exe "nnoremap <silent> <buffer> #{command}<CR>"
-    end
-
-    def exe(s)
-      VIM.command(s)
     end
   end
 end

@@ -45,12 +45,13 @@ The following keys work in the tree window:
   left-click     - toggle (open/close) directory or open file
   s              - open a file with split
   v              - open a file with vsplit
-  u              - make a directory the root directory
-  d              - move the root directory one level up
+  u              - move out (move the tree's root directory one level up)
+  i              - move into (make the current directory the tree's root directory)
   C              - change current working directory to root directory
   c              - change current working directory to selected directory
+  T              - focus tree window
   R              - refresh
-  q              - quit
+  Q              - quit
 
 The following groups are matched for highlighting (styling) the tree window.
 

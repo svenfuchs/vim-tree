@@ -6,7 +6,7 @@ function! s:VimTree(path)
       $:.unshift File.expand_path('~/Development/projects/vim_tree/lib')
       require 'vim_tree'
       path = Vim.evaluate('a:path')
-      $vim_tree = VimTree.run(path.empty? ? Dir.pwd : path)
+      VimTree.run(path.empty? ? Dir.pwd : path)
     end
 rb
 endfunction
@@ -18,10 +18,10 @@ function! VimTreeAction(action)
 rb
 endfunction
 
-function! FsTreeSync(path)
+function! VimTreeSync(path)
   ruby << rb
     path = VIM.evaluate("a:path")
-    $vim_tree.sync_to(path) if $vim_tree && $vim_tree != $curwin
+    $vim_tree.sync_to(path) if $vim_tree && $vim_tree.window != $curwin
 rb
 endfunction
 
