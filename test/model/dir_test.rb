@@ -52,10 +52,10 @@ class ModelDirTest < Test::Unit::TestCase
     assert_equal %w(foo foo), dir.flatten.map(&:basename).map(&:to_s)
   end
 
-  test "move_in changes the root to the current root's parent directory" do
+  test "move_out changes the root to the current root's parent directory" do
     dir.state = :open
     dir.children.last.state = :open
     dir.move_out
-    assert_equal %w(vim_tree-test root bar foo foo), dir.flatten.map(&:basename).map(&:to_s)
+    assert_equal %w(vim_tree-test root), dir.flatten.map(&:basename).map(&:to_s)
   end
 end

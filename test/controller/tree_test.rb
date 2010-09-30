@@ -75,6 +75,6 @@ class ControllerTreeTest < Test::Unit::TestCase
 
   test "move_out makes the current root's parent directory the root directory" do
     controller.move_out
-    assert_equal '▾ vim_tree-test  ▾ root    ▸ bar    ▸ foo', buffer.join
+    assert_equal '▾ vim_tree-test  ▸ root', buffer.join
   end
 end

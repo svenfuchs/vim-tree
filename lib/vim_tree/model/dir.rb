@@ -11,20 +11,14 @@ module VimTree
       end
 
       def move_out
+        close(:recursive => true)
         reset(dirname)
+        open
       end
 
       def move_in(node)
         reset(node) if node.directory?
       end
-
-      # def root=(root)
-      #   root.parent = nil
-      #   root.level = 0
-      #   root.open
-      #   root.reset
-      #   self[0] = root
-      # end
 
       def [](ix)
         flatten[ix]
@@ -62,12 +56,12 @@ module VimTree
 
       def open(options = {})
         self.state = :open
-        dirs.each { |dir| dir.open(options) } if options[:recursive]
+        each { |node| node.open(options) if node.directory? } if options[:recursive]
       end
 
       def close(options = {})
+        each { |node| node.close(options) if node.directory? } if options[:recursive]
         @state = :closed
-        dirs.each { |directory| dir.close(options) } if options[:recursive]
       end
 
       def open?
@@ -75,10 +69,10 @@ module VimTree
       end
 
       def reset(root = nil)
-        maintain_status do
+        # maintain_status do
           @path = root.to_s if root
           @children = nil
-        end
+        # end
       end
 
       def maintain_status(&block)

@@ -73,8 +73,8 @@ module VimTree
     def init_keys
       map_key  :left,      :left
       map_key  :right,     :right
-      map_key  :'s-left',  :shift_left  # TODO
-      map_key  :'s-right', :shift_right # TODO
+      map_key  :'s-left',  :shift_left
+      map_key  :'s-right', :shift_right
       map_key  :'s-up',    :page_up     # TODO
       map_key  :'s-down',  :page_down   # TODO
 
@@ -91,8 +91,8 @@ module VimTree
       map_char :C,  :cwd_root
       map_char :u,  :move_out
       map_char :d,  :move_in
-      map_char :R,  :refresh            # TODO
-      map_char :q,  :quit               # TODO
+      map_char :R,  :refresh
+      map_char :q,  :quit
 
       # map <a-leftmouse> # only activate window
       map "<leftrelease> :call VimTreeAction('click')"

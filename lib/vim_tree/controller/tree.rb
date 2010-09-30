@@ -29,12 +29,9 @@ module VimTree
         end
       end
 
-      # def refresh
-      #   maintain_line do
-      #     @list.reset
-      #     render
-      #   end
-      # end
+      def refresh
+        render
+      end
 
       def cwd_root
         Vim.cwd(tree)
@@ -85,12 +82,23 @@ module VimTree
         end
       end
 
-      def move_out
-        maintain_line do
-          tree.move_out
-          render
-        end
-      end
+     def shift_left
+       move_to(tree.index(current.parent)) unless current.directory? && current.open?
+       current.close(:recursive => true)
+       render
+     end
+
+     def shift_right
+       current.open(:recursive => true)
+       render
+     end
+
+     def move_out
+       maintain_line do
+         tree.move_out
+         render
+       end
+     end
 
       def move_in
         tree.move_in(current)
