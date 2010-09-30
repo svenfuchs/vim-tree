@@ -58,4 +58,12 @@ class ModelDirTest < Test::Unit::TestCase
     dir.move_out
     assert_equal %w(vim_tree-test root), dir.flatten.map(&:basename).map(&:to_s)
   end
+
+  test "first_sibling returns a nodes first sibling" do
+    assert_equal dir.children.first, dir.children.last.first_sibling
+  end
+
+  test "last_sibling returns a nodes last sibling" do
+    assert_equal dir.children.last, dir.children.first.last_sibling
+  end
 end

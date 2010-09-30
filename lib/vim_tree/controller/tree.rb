@@ -93,6 +93,16 @@ module VimTree
        render
      end
 
+     def page_up
+       target = current.first_sibling? ? current.parent && current.parent.first_sibling : current.first_sibling
+       move_to(tree.index(target))
+     end
+
+     def page_down
+       target = current.last_sibling? ? current.parent && current.parent.last_sibling : current.last_sibling
+       move_to(tree.index(target))
+     end
+
      def move_out
        maintain_line do
          tree.move_out

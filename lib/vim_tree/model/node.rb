@@ -20,6 +20,22 @@ module VimTree
       def level
         @level ||= parent ? parent.level + 1 : 0
       end
+
+      def first_sibling?
+        first_sibling == self
+      end
+
+      def first_sibling
+        parent.nil? ? self : parent.children.first
+      end
+
+      def last_sibling?
+        last_sibling == self
+      end
+
+      def last_sibling
+        parent.nil? ? self : parent.children.last
+      end
     end
   end
 end

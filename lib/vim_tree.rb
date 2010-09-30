@@ -75,16 +75,16 @@ module VimTree
       map_key  :right,     :right
       map_key  :'s-left',  :shift_left
       map_key  :'s-right', :shift_right
-      map_key  :'s-up',    :page_up     # TODO
-      map_key  :'s-down',  :page_down   # TODO
+      map_key  :'s-up',    :page_up
+      map_key  :'s-down',  :page_down
 
       map_char :h,  :left
       map_char :l,  :right
       map_char :H,  :shift_left
       map_char :L,  :shift_right
       map_key  :CR, :click
-      map_char :K,  :page_up            # TODO
-      map_char :J,  :page_down          # TODO
+      map_char :K,  :page_up
+      map_char :J,  :page_down
       map_char :s,  :split
       map_char :v,  :vsplit
       map_char :c,  :cwd
