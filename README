@@ -1,9 +1,13 @@
-= FsTree
+= VimTree
 
 VIM Filesystem Tree plugin in Ruby.
 
-Less than 1000 lines of unit-tested, readable code. Yes, VIM plugins *can*
-be slick & sexy.
+Less than 500 lines of unit-tested, readable code. Yes, VIM plugins *can* be
+slick & sexy.
+
+
+Currently in the middle of a rewrite. The following might be outdated or
+currently not working.
 
 
 == Requirements
@@ -12,20 +16,20 @@ VIM Ruby support
 
 == Installation
 
-Copy or link fs_tree* to ~/.vim/plugin (i.e. both the fs_tree directory and the
-fs_tree.vim plugin file).
+Copy or link vim_tree* to ~/.vim/plugin (i.e. both the vim_tree directory and
+the vim_tree.vim plugin file).
 
 == Usage
 
 This will open the tree window:
 
-  :FsTree
+  :VimTree
 
 If you provide a path as an argument (you can use auto-completition here) then
-FsTree will set the current working directory to that path and open with it as
-a root path:
+VimTree will set the current working directory to that path and open with it
+as a root path:
 
-  :FsTree ~/Development/vim/fs_tree
+  :VimTree ~/Development/vim/vim_tree
 
 The following keys work in the tree window:
 
@@ -50,23 +54,23 @@ The following keys work in the tree window:
 
 The following groups are matched for highlighting (styling) the tree window.
 
-  fsTree              - the whole tree window *
-  fsDir               - any directory *
-  fsDirOpen           - an open directory
-  fsDirClosed         - a closed directory
-  fsDirHandle         - the handle of any directory *
-  fsDirHandleOpen     - an open directory handle
-  fsDirHandleClosed   - a closed directory handle
-  fsBufferLoaded      - a file that is loaded in any buffer
-  fsDot               - marker for loaded files (hidden by default)
+  vimTree              - the whole tree window *
+  vimDir               - any directory *
+  vimDirOpen           - an open directory
+  vimDirClosed         - a closed directory
+  vimDirHandle         - the handle of any directory *
+  vimDirHandleOpen     - an open directory handle
+  vimDirHandleClosed   - a closed directory handle
+  vimBufferLoaded      - a file that is loaded in any buffer
+  vimDot               - marker for loaded files (hidden by default)
 
 *) doesn't currently work. can you fix them?
 
 == Todo
 
 - map m to: minimize tree window
-- figure out how to have a fs_tree filetype and syntax in order to hide the
-  cursor locally in the fs_tree window
+- figure out how to have a vim_tree filetype and syntax in order to hide the
+  cursor locally in the vim_tree window
 - figure out how to map cmd-click to just activating the window
   instead of opening the node
 - extract config options
