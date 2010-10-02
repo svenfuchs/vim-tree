@@ -34,6 +34,7 @@ endfunction
 
 command! -nargs=? -complete=dir VimTree :call <SID>VimTree("<args>")
 command! VimTreeReload :call <SID>VimTreeReload()
+command! VimTreeStatus :call <SID>VimTreeStatus()
 
 exe "map  <c-f> <esc>:VimTree<CR>"
 exe "imap <c-f> <esc>:VimTree<CR>"

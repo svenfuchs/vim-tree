@@ -9,6 +9,8 @@ module VimTree
   autoload :Model,      'vim_tree/model'
   autoload :View,       'vim_tree/view'
 
+  WIDTH = 30
+
   extend Vim
 
   class << self
@@ -31,6 +33,14 @@ module VimTree
       $vim_tree = nil
     end
 
+    def update_status
+      ix, subdirs = 1, ::Dir.getwd.split('/')
+      ix += 1 until ix == subdirs.size - 1 || subdirs[-(ix + 1)..-1].join('/').size > WIDTH - 5
+      status = subdirs[-ix..-1].join('/')
+      status = "../#{status}" if ix < subdirs.size
+      cmd "setlocal statusline=#{status.gsub('//', '/')}"
+    end
+
     # init the top/leftmost window as a tree window
     # use it as a view?
     def run(root)
@@ -40,8 +50,9 @@ module VimTree
 
       init_window
       init_buffer
-      # init_highlighting
+      init_highlighting
       init_keys
+      update_status
 
       $vim_tree = Controller.new(Window[0], root)
       $vim_tree.render
@@ -49,7 +60,7 @@ module VimTree
 
     def init_window
       cmd "silent! topleft vnew #{@title}"
-      cmd "vertical resize 30"
+      cmd "vertical resize #{WIDTH}"
     end
 
     def init_buffer

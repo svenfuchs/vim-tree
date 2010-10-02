@@ -45,6 +45,7 @@ module VimTree
 
     def cwd(path = line)
       Vim.cwd(path) if path.directory?
+      VimTree.update_status
     end
 
     def move_up
