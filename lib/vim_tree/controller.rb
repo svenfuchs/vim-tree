@@ -1,29 +1,16 @@
 module VimTree
-  class Controller
-    attr_reader :dir, :window, :view
+  module Controller
+    attr_reader :dir, :view
 
-    def initialize(window, dir)
-      @window = window
-      @dir    = Model::Dir.new(dir, nil, :open)
-      @view   = View::Tree.new(self.dir)
+    def init(dir)
+      @dir  = Model::Dir.new(dir, nil, :open)
+      @view = View::Tree.new(self.dir)
     end
 
     def action(action)
       VimTree.store_last_window
       send(action)
     end
-
-    def quit
-      VimTree.close
-    end
-
-    def focus
-      VimTree.focus
-    end
-
-    # def toggle
-    #   VimTree.window.toggle
-    # end
 
     def sync_to(path)
       if VimTree.valid? && ix = dir.index(path)
@@ -45,7 +32,7 @@ module VimTree
 
     def cwd(path = line)
       Vim.cwd(path) if path.directory?
-      VimTree.update_status
+      update_status
     end
 
     def move_up
@@ -60,18 +47,18 @@ module VimTree
       if line.directory?
         line.toggle
       else
-        window.open(line)
+        open(line)
       end
       render
     end
 
     def split
-      window.split(line) if line.file?
+      super(line) if line.file?
       render
     end
 
     def vsplit
-      window.vsplit(line) if line.file?
+      super(line) if line.file?
       render
     end
 
@@ -86,7 +73,7 @@ module VimTree
         line.open
         move_down
       else
-        window.open(line)
+        open(line)
       end
       render
     end
@@ -126,7 +113,7 @@ module VimTree
     end
 
     def move_to(line)
-      window.cursor = [line.to_i + 1, window.cursor[1]] if line
+      self.cursor = [line.to_i + 1, cursor[1]] if line
     end
 
     def line
@@ -134,28 +121,13 @@ module VimTree
     end
 
     def line_number
-      window.buffer.line_number - 1
+      buffer.line_number - 1
     end
 
     def render
-      window.focussed do
-        window.unlocked do
-          window.buffer.display(view.render)
-        end
+      unlocked do
+        buffer.display(view.render)
       end
-    end
-
-    def maintain_window(&block)
-      current = $curwin
-      $vim_tree.window.focus
-      yield
-      current.focus
-    end
-
-    def maintain_line(&block)
-      line = self.line
-      yield
-      move_to(dir.index(line)) if line
     end
   end
 end

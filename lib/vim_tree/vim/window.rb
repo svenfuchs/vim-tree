@@ -6,7 +6,7 @@ module Vim
     }
 
     class << self
-      include Enumerable
+      include Vim, Enumerable
 
       def each(&block)
         i = 0
@@ -28,9 +28,24 @@ module Vim
       def open?(path)
         !!find(path)
       end
+
+      def previous!
+        block_events { cmd('wincmd p') }
+      end
+
+      def previous
+        previous!
+        $curwin.tap { previous! }
+      end
     end
 
     include Vim
+
+    attr_accessor :controller
+
+    def tree?
+      singleton_class.included_modules.include?(VimTree)
+    end
 
     def valid?
       focussed { !!buffer.line_number } rescue false
@@ -71,6 +86,18 @@ module Vim
       cmd "wincmd q"
     end
 
+    def can_load?
+      modified? && !modifiable?
+    end
+
+    def modified?
+      focussed { Vim.eval('&modified') == '1' }
+    end
+
+    def modifiable?
+      focussed { Vim.eval('&modifiable') == '1' }
+    end
+
     def focus
       Vim.block_events { Vim.cmd "#{number} wincmd w" }
     end
@@ -90,9 +117,11 @@ module Vim
     end
 
     def unlocked(&block)
-      unlock
-      yield
-      lock
+      focussed do
+        unlock
+        yield
+        lock
+      end
     end
 
     def lock
@@ -103,16 +132,17 @@ module Vim
       focussed { Vim.cmd "setlocal modifiable" }
     end
 
-    def can_load?
-      modified? && !modifiable?
+    def maintain_window(&block)
+      current = $curwin
+      focus
+      yield
+      current.focus
     end
 
-    def modified?
-      focussed { Vim.eval('&modified') == '1' }
-    end
-
-    def modifiable?
-      focussed { Vim.eval('&modifiable') == '1' }
+    def maintain_line(&block)
+      line = self.line
+      yield
+      move_to(dir.index(line)) if line
     end
 
     def width

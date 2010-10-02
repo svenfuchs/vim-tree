@@ -51,7 +51,6 @@ The following keys work in the tree window:
   c              - change current working directory to selected directory
   T              - focus tree window
   R              - refresh
-  Q              - quit
 
 The following groups are matched for highlighting (styling) the tree window.
 

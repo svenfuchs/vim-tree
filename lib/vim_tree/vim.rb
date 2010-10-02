@@ -6,15 +6,6 @@ module Vim
     cmd "cd #{path.to_s}"
   end
 
-  def previous!
-    block_events { cmd('wincmd p') }
-  end
-
-  def previous
-    previous!
-    $curwin.tap { previous! }
-  end
-
   def block_events(&block)
     with_setting(:eventignore, 'all', &block)
   end

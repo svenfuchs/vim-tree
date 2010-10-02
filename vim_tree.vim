@@ -1,10 +1,13 @@
 function! s:VimTree(path)
   ruby << rb
-    if $vim_tree
-      $vim_tree.focus()
-    else
+    unless defined?(VimTree)
       $:.unshift File.expand_path('~/Development/projects/vim_tree/lib')
       require 'vim_tree'
+    end
+
+    if VimTree.current
+      VimTree.current.focus()
+    else
       path = Vim.evaluate('a:path')
       VimTree.run(path.empty? ? Dir.pwd : path)
     end
@@ -14,14 +17,14 @@ endfunction
 function! VimTreeAction(action)
   ruby << rb
     action = Vim.evaluate("a:action")
-    $vim_tree.action(action) if $vim_tree
+    VimTree.current.action(action) if VimTree.current
 rb
 endfunction
 
 function! VimTreeSync(path)
   ruby << rb
     path = VIM.evaluate("a:path")
-    $vim_tree.sync_to(path) if $vim_tree && $vim_tree.window != $curwin
+    VimTree.current.sync_to(path) if VimTree.current && !VimTree.current.focussed?
 rb
 endfunction
 
