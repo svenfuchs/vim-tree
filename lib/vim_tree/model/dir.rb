@@ -69,15 +69,18 @@ module VimTree
         state == :open
       end
 
-      def reset(root = self)
-        # maintain_status do
+      def reset(*args)
+        options = args.last.is_a?(Hash) ? args.pop : {}
+        root = args.first || self
+        reset = lambda do
           @path = root.to_s if root
           @children = nil
-        # end
+        end
+        options[:maintain_status] ? maintain_status(&reset) : reset.call
       end
 
       def maintain_status(&block)
-        paths = select { |node| node.directory? && node.open? }.map(&:to_s)
+        paths = flatten.select { |node| node.directory? && node.open? }.map(&:to_s)
         paths.unshift(to_s) if open?
         yield
         paths.each { |path| node = find(path) and node.open }

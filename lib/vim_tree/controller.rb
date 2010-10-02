@@ -35,6 +35,7 @@ module VimTree
     end
 
     def refresh
+      dir.reset(:maintain_status => true)
       render
     end
 
