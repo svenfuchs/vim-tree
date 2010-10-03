@@ -44,7 +44,7 @@ module Vim
     attr_accessor :controller
 
     def tree?
-      singleton_class.included_modules.include?(VimTree)
+      singleton_class.included_modules.include?(Vim::Tree)
     end
 
     def valid?
@@ -70,13 +70,13 @@ module Vim
     def open(path, mode = :normal)
       if mode == :normal && window = Window.find(path)
         window.focus
-      elsif mode == :normal and !VimTree.last_window.can_load?
+      elsif mode == :normal and !Vim::Tree.last_window.can_load?
         open(path, :split)
       elsif buffer = Buffer.find(path)
-        VimTree.last_window.focus
+        Vim::Tree.last_window.focus
         cmd "#{COMMANDS[:buff][mode]} #{buffer.number}"
       else
-        VimTree.last_window.focus
+        Vim::Tree.last_window.focus
         cmd "#{COMMANDS[:file][mode]} #{escape(path)}"
       end
     end
@@ -146,7 +146,7 @@ module Vim
     end
 
     def width
-      eval("winwidth(#{VimTree.window.number})").to_i
+      eval("winwidth(#{Vim::Tree.window.number})").to_i
     end
   end
 end

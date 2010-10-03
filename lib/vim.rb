@@ -1,5 +1,5 @@
-require 'vim_tree/vim/buffer'
-require 'vim_tree/vim/window'
+require 'vim/buffer'
+require 'vim/window'
 
 module Vim
   def cwd(path)

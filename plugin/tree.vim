@@ -1,38 +1,39 @@
 function! s:VimTree(path)
-  ruby << rb
+  ruby <<
     unless defined?(VimTree)
-      $:.unshift File.expand_path('~/Development/projects/vim_tree/lib')
-      require 'vim_tree'
+      path = VIM.evaluate('&runtimepath').split(',').detect { |p| p.include?('vim-tree') }
+      $:.unshift("#{path}/lib")
+      require 'vim/tree'
     end
 
-    if VimTree.current
-      VimTree.current.focus()
+    if Vim::Tree.current
+      Vim::Tree.current.focus()
     else
       path = Vim.evaluate('a:path')
-      VimTree.run(path.empty? ? Dir.pwd : path)
+      Vim::Tree.run(path.empty? ? Dir.pwd : path)
     end
-rb
+.
 endfunction
 
 function! VimTreeAction(action)
-  ruby << rb
+  ruby <<
     action = Vim.evaluate("a:action")
-    VimTree.current.action(action) if VimTree.current
-rb
+    Vim::Tree.current.action(action) if Vim::Tree.current
+.
 endfunction
 
 function! VimTreeSync(path)
-  ruby << rb
+  ruby <<
     path = VIM.evaluate("a:path")
-    VimTree.current.sync_to(path) if VimTree.current && !VimTree.current.focussed?
-rb
+    Vim::Tree.current.sync_to(path) if Vim::Tree.current && !Vim::Tree.current.focussed?
+.
 endfunction
 
 function! s:VimTreeReload()
-  ruby << rb
+  ruby <<
     lib = File.expand_path('~/Development/projects/vim_tree/lib')
     Dir["#{lib}/**/*.rb"].each { |path| load(path) }
-rb
+.
 endfunction
 
 command! -nargs=? -complete=dir VimTree :call <SID>VimTree("<args>")
