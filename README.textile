@@ -1,0 +1,6 @@
+h1. Vim Tree
+
+vim-tree is a VIM filesystem tree plugin in less than 500 lines of unit-tested, readable code.
+
+See the "Vim doc":http://github.com/svenfuchs/vim-tree/blob/master/doc/vim-tree.txt for details.
+
