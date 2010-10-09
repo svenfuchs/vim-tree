@@ -1,0 +1,68 @@
+*vim-tree.txt* VIM Filesystem Tree Plugin
+
+Author: Sven Fuchs <svenfuchs@artweb-design.de>       *vim-tree-about*
+Source: http://github.com/svenfuchs/vim-tree
+License: MIT http://github.com/svenfuchs/vim-tree/LICENCSE
+
+
+INTRODUCTION                                          *vim-tree*
+
+vim-tree is a VIM filesystem tree plugin in less than 500 lines of unit-
+tested, readable code.
+
+
+USAGE                                                 *vim-tree-usage*
+
+This will open the tree window:
+
+  :VimTree
+
+If you provide a path as an argument then vim-tree will set the current
+working directory to that path and open the tree window with it as a root
+path:
+
+  :VimTree ~/Development/vim/vim_tree
+
+The following keys work in the tree window:
+
+  h, <Left>    - close directory (if closed, closes the parent directory)
+  l, <Right>   - open directory (and move into it) or file
+  H, <S-Left>  - recursively open directory
+  L, <S-Right> - recursively close directory
+  k, <Up>      - navigate up
+  j, <Down>    - navigate down
+  K, <S-Up>    - navigate to first sibling
+  J, <S-Down>  - navigate to last sibling
+  cr (enter)   - toggle (open/close) directory or open file
+  left-click   - toggle (open/close) directory or open file
+  s            - open a file with split
+  v            - open a file with vsplit
+  u            - move out (move the tree's root directory one level up)
+  i            - move into (current directory becomes the tree's root dir)
+  C            - change current working directory to root directory
+  c            - change current working directory to selected directory
+  T            - focus tree window
+  R            - refresh
+
+
+HIGHLIGHTING                                          *vim-tree-highlighting*
+
+The following groups are matched for highlighting (styling) the tree window.
+
+  vimTree              - the whole tree window *
+  vimDir               - any directory *
+  vimDirOpen           - an open directory
+  vimDirClosed         - a closed directory
+  vimDirHandle         - the handle of any directory *
+  vimDirHandleOpen     - an open directory handle
+  vimDirHandleClosed   - a closed directory handle
+  vimBufferLoaded      - a file that is loaded in any buffer
+  vimDot               - marker for loaded files (hidden by default)
+
+*) doesn't currently work. can you fix them?
+
+
+
+
+vim:tw=78:ts=8:ft=help:norl:
+
