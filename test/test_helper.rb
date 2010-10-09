@@ -7,7 +7,7 @@ require 'mocha'
 require 'test_declarative'
 require 'pathname'
 require 'fileutils'
-require 'vim_tree'
+require 'vim/tree'
 
 class Test::Unit::TestCase
   autoload :Mocks, 'test_helper/mocks'
@@ -17,7 +17,7 @@ class Test::Unit::TestCase
   attr_reader :root
 
   def setup
-    @root = Pathname.new('/tmp/vim_tree-test/root')
+    @root = Pathname.new('/tmp/vim-tree-test/root')
     setup_test_directory
   end
 

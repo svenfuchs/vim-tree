@@ -144,9 +144,5 @@ module Vim
       yield
       move_to(dir.index(line)) if line
     end
-
-    def width
-      eval("winwidth(#{Vim::Tree.window.number})").to_i
-    end
   end
 end

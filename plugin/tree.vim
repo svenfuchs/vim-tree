@@ -1,7 +1,7 @@
 function! s:VimTree(path)
   ruby <<
     unless defined?(VimTree)
-      path = VIM.evaluate('&runtimepath').split(',').detect { |p| p.include?('vim-tree') }
+      path = ::VIM.evaluate('&runtimepath').split(',').detect { |p| p.include?('vim-tree') }
       $:.unshift("#{path}/lib")
       require 'vim/tree'
     end
@@ -9,23 +9,25 @@ function! s:VimTree(path)
     if Vim::Tree.current
       Vim::Tree.current.focus()
     else
-      path = Vim.evaluate('a:path')
-      Vim::Tree.run(path.empty? ? Dir.pwd : path)
+      paths = [::VIM.evaluate('a:path'), $curwin.buffer.name, Dir.pwd].compact
+      paths.reject! { |path| path.empty? }
+      path = File.expand_path(paths.first)
+      Vim::Tree.run(path) if File.directory?(path)
     end
 .
 endfunction
 
 function! VimTreeAction(action)
   ruby <<
-    action = Vim.evaluate("a:action")
-    Vim::Tree.current.action(action) if Vim::Tree.current
+    action = ::VIM.evaluate("a:action")
+    ::Vim::Tree.current.action(action) if Vim::Tree.current
 .
 endfunction
 
 function! VimTreeSync(path)
   ruby <<
-    path = VIM.evaluate("a:path")
-    Vim::Tree.current.sync_to(path) if Vim::Tree.current && !Vim::Tree.current.focussed?
+    path = ::VIM.evaluate("a:path")
+    ::Vim::Tree.current.sync_to(path) if Vim::Tree.current && !Vim::Tree.current.focussed?
 .
 endfunction
 

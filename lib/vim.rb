@@ -23,11 +23,11 @@ module Vim
   end
 
   def cmd(s)
-    Vim.command(s)
+    ::VIM.command(s)
   end
 
   def eval(s)
-    Vim.evaluate(s)
+    ::VIM.evaluate(s)
   end
 
   def map_char(char, target = char, options = {})
