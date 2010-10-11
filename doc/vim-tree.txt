@@ -23,12 +23,15 @@ path:
 
   :VimTree ~/Development/vim/vim_tree
 
+You can focus the vim-tree window from anywhere using <C-f> (mapped by
+default) or using the :VimTreeFocus command.
+
 The following keys work in the tree window:
 
   h, <Left>    - close directory (if closed, closes the parent directory)
   l, <Right>   - open directory (and move into it) or file
-  H, <S-Left>  - recursively open directory
-  L, <S-Right> - recursively close directory
+  H, <S-Left>  - recursively close a directory
+  L, <S-Right> - recursively open a directory
   k, <Up>      - navigate up
   j, <Down>    - navigate down
   K, <S-Up>    - navigate to first sibling
@@ -41,7 +44,6 @@ The following keys work in the tree window:
   i            - move into (current directory becomes the tree's root dir)
   C            - change current working directory to root directory
   c            - change current working directory to selected directory
-  T            - focus tree window
   R            - refresh
 
 
