@@ -23,8 +23,18 @@ module Vim
       end
 
       def refresh
-        dir.reset(:maintain_status => true)
-        render
+        focussed do
+          dir.reset(:maintain_status => true)
+          render
+        end
+      end
+
+      def position!
+        focussed do
+          cmd "#{number} wincmd H"
+          cmd "vertical resize #{Vim::Tree::WIDTH}"
+          move_to(line_number)
+        end
       end
 
       def cwd_root
@@ -114,7 +124,7 @@ module Vim
       end
 
       def move_to(line)
-        self.cursor = [line.to_i + 1, cursor[1]] if line
+        self.cursor = [line.to_i + 1, 0] if line
       end
 
       def line

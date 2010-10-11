@@ -38,9 +38,25 @@ function! s:VimTreeReload()
 .
 endfunction
 
+function! s:VimTreePosition()
+  ruby ::Vim::Tree.current.position!
+endfunction
+
 command! -nargs=? -complete=dir VimTree :call <SID>VimTree("<args>")
 command! VimTreeReload :call <SID>VimTreeReload()
-command! VimTreeStatus :call <SID>VimTreeStatus()
+command! VimTreePosition :call <SID>VimTreePosition()
 
-exe "map  <c-f> <esc>:VimTree<CR>"
-exe "imap <c-f> <esc>:VimTree<CR>"
+au BufAdd * :call s:VimTreePosition()
+au BufWritePost * :call VimTreeAction('refresh')
+au FocusLost * :silent! wa
+
+map  <c-f> <esc>:VimTree<CR>
+imap <c-f> <esc>:VimTree<CR>
+
+" this should keep the vim tree window sticking to the left. works most of the
+" time but not always, no idea why.
+map <C-w>K :exe "wincmd K"<CR>:VimTreePosition<CR>
+map <C-w>J :exe "wincmd J"<CR>:VimTreePosition<CR>
+map <C-w>H :exe "wincmd H"<CR>:VimTreePosition<CR>
+map <C-w>L :exe "wincmd L"<CR>:VimTreePosition<CR>
+
