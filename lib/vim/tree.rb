@@ -116,8 +116,6 @@ module Vim
       map_char :i,  :move_in
       map_char :u,  :move_out
       map_char :R,  :refresh
-      map_char :T,  :focus,  :buffer => false
-      map_char :M,  :toggle, :buffer => false
 
       # map <a-leftmouse> # only activate window
       map "<leftrelease> :call VimTreeAction('click')"
