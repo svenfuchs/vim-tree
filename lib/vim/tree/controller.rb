@@ -96,8 +96,13 @@ module Vim
       end
 
       def shift_right
-        line.open(:recursive => true)
-        render
+        if line.directory?
+          line.open(:recursive => true)
+          render
+        else
+          open(line)
+          focus
+        end
       end
 
       def page_up

@@ -31,7 +31,7 @@ The following keys work in the tree window:
   h, <Left>    - close directory (if closed, closes the parent directory)
   l, <Right>   - open directory (and move into it) or file
   H, <S-Left>  - recursively close a directory
-  L, <S-Right> - recursively open a directory
+  L, <S-Right> - recursively open a directory, open a file staying on vimtree
   k, <Up>      - navigate up
   j, <Down>    - navigate down
   K, <S-Up>    - navigate to first sibling
