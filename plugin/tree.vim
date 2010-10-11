@@ -31,10 +31,9 @@ function! VimTreeSync(path)
 .
 endfunction
 
-function! s:VimTreeReload()
+function! s:VimTreeFocus()
   ruby <<
-    lib = File.expand_path('~/Development/projects/vim_tree/lib')
-    Dir["#{lib}/**/*.rb"].each { |path| load(path) }
+    ::Vim::Tree.current.toggle_focus
 .
 endfunction
 
@@ -42,7 +41,15 @@ function! s:VimTreePosition()
   ruby ::Vim::Tree.current.position!
 endfunction
 
+function! s:VimTreeReload()
+  ruby <<
+    lib = File.expand_path('~/Development/projects/vim_tree/lib')
+    Dir["#{lib}/**/*.rb"].each { |path| load(path) }
+.
+endfunction
+
 command! -nargs=? -complete=dir VimTree :call <SID>VimTree("<args>")
+command! VimTreeFocus :call <SID>VimTreeFocus()
 command! VimTreeReload :call <SID>VimTreeReload()
 command! VimTreePosition :call <SID>VimTreePosition()
 
@@ -50,8 +57,8 @@ au BufAdd * :call s:VimTreePosition()
 au BufWritePost * :call VimTreeAction('refresh')
 au FocusLost * :silent! wa
 
-map  <c-f> <esc>:VimTree<CR>
-imap <c-f> <esc>:VimTree<CR>
+map  <c-f> <esc>:VimTreeFocus<CR>
+imap <c-f> <esc>:VimTreeFocus<CR>
 
 " this should keep the vim tree window sticking to the left. works most of the
 " time but not always, no idea why.

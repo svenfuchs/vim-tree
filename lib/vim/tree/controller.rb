@@ -22,6 +22,17 @@ module Vim
         end
       end
 
+      def toggle_focus
+        if !focussed?
+          Vim::Tree.last_window = $curwin
+          focus
+        elsif Vim::Tree.last_window
+          Vim::Tree::last_window.focus
+        else
+          cmd "wincmd w"
+        end
+      end
+
       def refresh
         focussed do
           dir.reset(:maintain_status => true)
