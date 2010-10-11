@@ -37,6 +37,19 @@ module Vim
         def last_sibling
           parent.nil? ? self : parent.children.last
         end
+
+        def cp(name)
+          method = directory? ? :cp_r : :cp
+          FileUtils.send(method, self, dirname.join(name))
+        end
+
+        def mv(name)
+          rename(dirname.join(name))
+        end
+
+        def rm
+          directory? ? rmtree : delete
+        end
       end
     end
   end

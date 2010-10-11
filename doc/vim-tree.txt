@@ -17,13 +17,13 @@ This will open the tree window:
 
   :VimTree
 
-If you provide a path as an argument then vim-tree will set the current
+If you provide a path as an argument then vimtree will set the current
 working directory to that path and open the tree window with it as a root
 path:
 
   :VimTree ~/Development/vim/vim_tree
 
-You can focus the vim-tree window from anywhere using <C-f> (mapped by
+You can focus the vimtree window from anywhere using <C-f> (mapped by
 default) or using the :VimTreeFocus command.
 
 The following keys work in the tree window:
@@ -42,9 +42,14 @@ The following keys work in the tree window:
   v            - open a file with vsplit
   u            - move out (move the tree's root directory one level up)
   i            - move into (current directory becomes the tree's root dir)
-  C            - change current working directory to root directory
   c            - change current working directory to selected directory
-  R            - refresh
+  C            - change current working directory to root directory
+  n            - create a file
+  N            - create a directory
+  m            - move/rename a file or directory
+  p            - copy a file or directory
+  r            - remove a file or directory
+  R            - refresh the vimtree window
 
 
 HIGHLIGHTING                                          *vim-tree-highlighting*

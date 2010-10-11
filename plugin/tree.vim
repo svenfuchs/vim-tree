@@ -50,8 +50,8 @@ endfunction
 
 command! -nargs=? -complete=dir VimTree :call <SID>VimTree("<args>")
 command! VimTreeFocus :call <SID>VimTreeFocus()
-command! VimTreeReload :call <SID>VimTreeReload()
 command! VimTreePosition :call <SID>VimTreePosition()
+command! VimTreeReload :call <SID>VimTreeReload()
 
 au BufAdd * :call s:VimTreePosition()
 au BufWritePost * :call VimTreeAction('refresh')

@@ -1,3 +1,5 @@
+require 'fileutils'
+
 module Vim
   module Tree
     module Controller
@@ -55,6 +57,35 @@ module Vim
       def cwd(path = line)
         Vim.cwd(path) if path.directory?
         update_status
+      end
+
+      def create_file
+        name = prompt('New file:')
+        FileUtils.touch(line.join(name)) unless name.empty?
+        refresh
+      end
+
+      def create_dir
+        name = prompt('New directory:')
+        line.join(name).mkpath unless name.empty?
+        refresh
+      end
+
+      def cp
+        name = prompt("Copy \"#{File.basename(line)}\" to:")
+        line.cp(name) unless name.empty?
+        refresh
+      end
+
+      def mv
+        name = prompt("Move/rename \"#{File.basename(line)}\" to:")
+        line.mv(name) unless name.empty?
+        refresh
+      end
+
+      def rm
+        line.rm if prompt("Do you really want to remove \"#{File.basename(line)}\"? (y/n)") == 'y'
+        refresh
       end
 
       def move_up
@@ -149,6 +180,10 @@ module Vim
 
       def line_number
         buffer.line_number - 1
+      end
+
+      def prompt(prompt)
+        eval("input('#{prompt} ')")
       end
 
       def render
