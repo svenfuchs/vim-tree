@@ -53,7 +53,7 @@ command! VimTreeFocus :call <SID>VimTreeFocus()
 command! VimTreePosition :call <SID>VimTreePosition()
 command! VimTreeReload :call <SID>VimTreeReload()
 
-au BufAdd * :call s:VimTreePosition()
+" au BufAdd * :call s:VimTreePosition()
 au BufWritePost * :call VimTreeAction('refresh')
 au FocusLost * :silent! wa
 
