@@ -116,8 +116,8 @@ module Vim
       map_char :i,  :move_in
       map_char :u,  :move_out
       map_char :R,  :refresh
-      map_char :n,  :create_file
-      map_char :N,  :create_dir
+      map_char :n,  :touch
+      map_char :N,  :mkdir
       map_char :p,  :cp
       map_char :m,  :mv
       map_char :r,  :rm

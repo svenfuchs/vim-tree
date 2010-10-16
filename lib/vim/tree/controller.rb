@@ -59,15 +59,15 @@ module Vim
         update_status
       end
 
-      def create_file
+      def touch
         name = prompt('New file:')
-        FileUtils.touch(line.join(name)) unless name.empty?
+        line.touch(name) unless name.empty?
         refresh
       end
 
-      def create_dir
+      def mkdir
         name = prompt('New directory:')
-        line.join(name).mkpath unless name.empty?
+        line.mkdir(name) unless name.empty?
         refresh
       end
 

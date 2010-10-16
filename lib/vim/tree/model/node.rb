@@ -38,6 +38,16 @@ module Vim
           parent.nil? ? self : parent.children.last
         end
 
+        def touch(name)
+          path = directory? ? self : dirname
+          FileUtils.touch(path.join(name))
+        end
+
+        def mkdir(name)
+          path = directory? ? self : dirname
+          path.join(name).mkpath
+        end
+
         def cp(name)
           method = directory? ? :cp_r : :cp
           FileUtils.send(method, self, dirname.join(name))
