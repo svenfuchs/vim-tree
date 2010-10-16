@@ -16,7 +16,7 @@ module Vim
       attr_accessor :last_window
 
       def run(root)
-        unless current && current.valid?
+        unless window && window.valid?
           cmd "silent! topleft vnew #{@title}"
           tree = Window[0]
           tree.singleton_class.send(:include, Vim::Tree, Vim::Tree::Controller)
@@ -24,7 +24,7 @@ module Vim
         end
       end
 
-      def current
+      def window
         Window.detect(&:tree?)
       end
 
@@ -33,7 +33,7 @@ module Vim
       end
 
       def valid?
-        current.valid?
+        window.valid?
       end
     end
 

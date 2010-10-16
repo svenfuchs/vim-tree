@@ -6,8 +6,8 @@ function! s:VimTree(path)
       require 'vim/tree'
     end
 
-    if Vim::Tree.current
-      Vim::Tree.current.focus()
+    if Vim::Tree.window
+      Vim::Tree.window.focus()
     else
       paths = [::VIM.evaluate('a:path'), $curwin.buffer.name, Dir.pwd].compact
       paths.reject! { |path| path.empty? }
@@ -20,25 +20,25 @@ endfunction
 function! VimTreeAction(action)
   ruby <<
     action = ::VIM.evaluate("a:action")
-    ::Vim::Tree.current.action(action) if Vim::Tree.current
+    ::Vim::Tree.window.action(action) if Vim::Tree.window
 .
 endfunction
 
 function! VimTreeSync(path)
   ruby <<
     path = ::VIM.evaluate("a:path")
-    ::Vim::Tree.current.sync_to(path) if Vim::Tree.current && !Vim::Tree.current.focussed?
+    ::Vim::Tree.window.sync_to(path) if Vim::Tree.window && !Vim::Tree.window.focussed?
 .
 endfunction
 
 function! s:VimTreeFocus()
   ruby <<
-    ::Vim::Tree.current.toggle_focus
+    ::Vim::Tree.window.toggle_focus
 .
 endfunction
 
 function! s:VimTreePosition()
-  ruby ::Vim::Tree.current.position!
+  ruby ::Vim::Tree.window.position!
 endfunction
 
 function! s:VimTreeReload()
