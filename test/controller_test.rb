@@ -7,7 +7,8 @@ class ControllerTest < Test::Unit::TestCase
     super
     @buffer = Mocks::Buffer.new
     @window = Mocks::Window.new(buffer)
-    @controller = Controller.new(window, root)
+    @controller = Mocks::Controller.new(buffer)
+    controller.init(root)
   end
 
   test "ensure the root directory is open, everything else is closed and the cursor on in the first line" do
@@ -75,6 +76,6 @@ class ControllerTest < Test::Unit::TestCase
 
   test "move_out makes the current root's parent directory the root directory" do
     controller.move_out
-    assert_equal '▾ vim_tree-test  ▸ root', buffer.join
+    assert_equal '▾ vim-tree-test  ▸ root', buffer.join
   end
 end
