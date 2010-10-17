@@ -22,9 +22,8 @@ module Vim
         if window && window.valid?
           window.focus
         else
-          paths = [path, ::VIM.evaluate('a:path'), $curwin.buffer.name, Dir.pwd].compact
-          paths.reject! { |path| path.empty? }
-          path = File.expand_path(paths.first)
+          path = [path, $curwin.buffer.name, Dir.pwd].compact.detect { |p| !p.empty? }
+          path = File.expand_path(path)
           create(path) if File.directory?(path)
         end
       end
@@ -34,6 +33,18 @@ module Vim
         tree = Window[0]
         tree.singleton_class.send(:include, Vim::Layout::Sticky, Vim::Tree, Vim::Tree::Controller)
         tree.init(path)
+      end
+
+      def action(*args)
+        window.action(*args) if window
+      end
+
+      def toggle_focus
+        window.toggle_focus if window
+      end
+
+      def sync
+        window.sync_to(Vim.eval('expand("%:p")')) if window
       end
 
       def reload!
@@ -69,6 +80,11 @@ module Vim
 
     def init_window
       cmd "vertical resize #{WIDTH}"
+      cmd ':au BufWritePost * :ruby Vim::Tree.action("refresh")'
+      cmd ':au BufEnter     * :ruby Vim::Tree.sync'
+      # cmd ':au SessionLoadPost call FsTreeSessionLoaded()'
+
+      cmd 'command! VimTreeReload :ruby Vim::Tree.reload!'
     end
 
     def init_buffer
@@ -82,15 +98,7 @@ module Vim
       cmd "setlocal nospell"
       cmd "setlocal nobuflisted"
       cmd "setlocal textwidth=0"
-      cmd "set noinsertmode"
-      cmd "set noshowcmd"
-      cmd "set nolist"
-      cmd "set report=9999"
-      cmd "set sidescroll=0"
-      cmd "set sidescrolloff=0"
       cmd "setlocal winfixwidth"
-      cmd ':au BufEnter * call VimTreeSync(expand("%:p"))'
-      # cmd ':au SessionLoadPost call FsTreeSessionLoaded()'
     end
 
     def init_highlighting
@@ -138,8 +146,9 @@ module Vim
       map_char :m,  :mv
       map_char :r,  :rm
 
-      # map <a-leftmouse> # only activate window
-      map "<leftrelease> :call VimTreeAction('click')"
+      map "<leftrelease> :ruby Vim::Tree.action('click')"
+      map '<c-f> :ruby Vim::Tree.toggle_focus', :mode => 'n', :buffer => false
+      map '<c-f> :ruby Vim::Tree.toggle_focus', :mode => 'i', :buffer => false
     end
 
     def update_status
@@ -147,7 +156,10 @@ module Vim
       ix += 1 until ix == subdirs.size - 1 || subdirs[-(ix + 1)..-1].join('/').size > WIDTH - 5
       status = subdirs[-ix..-1].join('/')
       status = "../#{status}" if ix < subdirs.size
-      cmd "setlocal statusline=#{status.gsub('//', '/')}"
+      status = status.gsub('//', '/')
+      cmd "setlocal statusline=#{status}"
+      # cmd "setlocal filename=#{status}"
+      cmd ":silent! file #{status}"
     end
 
     def update_tab_label
@@ -159,12 +171,13 @@ module Vim
     end
 
     def map_key(key, target = key, options = {})
-      map "<#{key}> :call VimTreeAction('#{target.to_s.downcase}')", options
+      map "<#{key}> :ruby Vim::Tree.action('#{target.to_s.downcase}')", options
     end
 
     def map(command, options = {})
+      options[:mode] ||= :nnore
       options[:buffer] = true unless options.key?(:buffer)
-      cmd "nnoremap <silent> #{'<buffer>' if options[:buffer]} #{command}<CR>"
+      cmd "#{options[:mode]}map <silent> #{'<buffer>' if options[:buffer]} #{'<esc>' if options[:mode] == 'i'}#{command}<CR>"
     end
   end
 end
