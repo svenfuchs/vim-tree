@@ -16,7 +16,7 @@ module Vim
       end
 
       def sync_to(path)
-        if Vim::Tree.valid? && ix = dir.index(path)
+        if Vim::Tree.valid? && !Vim::Tree.window.focussed? && ix = dir.index(path)
           maintain_window do
             move_to(ix)
             render
@@ -39,14 +39,6 @@ module Vim
         focussed do
           dir.reset(:maintain_status => true)
           render
-        end
-      end
-
-      def position!
-        focussed do
-          cmd "#{number} wincmd H"
-          cmd "vertical resize #{Vim::Tree::WIDTH}"
-          move_to(line_number)
         end
       end
 

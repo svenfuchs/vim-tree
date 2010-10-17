@@ -1,12 +1,15 @@
 require 'core_ext/ruby/string/ord'
 require 'core_ext/ruby/kernel/singleton_class'
-require 'vim'
+
+require 'vim/layout'
+require 'vim/tree/window'
 
 module Vim
   module Tree
     autoload :Controller, 'vim/tree/controller'
     autoload :Model,      'vim/tree/model'
     autoload :View,       'vim/tree/view'
+    autoload :Window,     'vim/tree/window'
 
     WIDTH = 30
 
@@ -15,13 +18,26 @@ module Vim
     class << self
       attr_accessor :last_window
 
-      def run(root)
-        unless window && window.valid?
-          cmd "silent! topleft vnew #{@title}"
-          tree = Window[0]
-          tree.singleton_class.send(:include, Vim::Tree, Vim::Tree::Controller)
-          tree.init(root)
+      def run(path)
+        if window && window.valid?
+          window.focus
+        else
+          paths = [path, ::VIM.evaluate('a:path'), $curwin.buffer.name, Dir.pwd].compact
+          paths.reject! { |path| path.empty? }
+          path = File.expand_path(paths.first)
+          create(path) if File.directory?(path)
         end
+      end
+
+      def create(path)
+        cmd "silent! topleft vnew #{@title}"
+        tree = Window[0]
+        tree.singleton_class.send(:include, Vim::Layout::Sticky, Vim::Tree, Vim::Tree::Controller)
+        tree.init(path)
+      end
+
+      def reload!
+        Dir["#{::Vim.runtime_path('vim-tree')}/lib/**/*.rb"].each { |path| load(path) }
       end
 
       def window
@@ -136,6 +152,19 @@ module Vim
 
     def update_tab_label
       # cmd 'set guitablabel=%{getcwd()}'
+    end
+
+    def map_char(char, target = char, options = {})
+      map_key :"Char-#{char.to_s.ord}", target, options
+    end
+
+    def map_key(key, target = key, options = {})
+      map "<#{key}> :call VimTreeAction('#{target.to_s.downcase}')", options
+    end
+
+    def map(command, options = {})
+      options[:buffer] = true unless options.key?(:buffer)
+      cmd "nnoremap <silent> #{'<buffer>' if options[:buffer]} #{command}<CR>"
     end
   end
 end
