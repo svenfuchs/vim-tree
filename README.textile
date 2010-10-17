@@ -4,3 +4,6 @@ vim-tree is a VIM filesystem tree plugin in less than 500 lines of unit-tested, 
 
 See the "Vim doc":http://github.com/svenfuchs/vim-tree/blob/master/doc/vim-tree.txt for details.
 
+h2. Installation
+
+Requires "vim-layout":http://github.com/svenfuchs/vim-layout and assumes a "pathogen":http://github.com/tpope/vim-pathogen style setup where both vim-layout and vim-tree are subdirectories of your runtimepath.
