@@ -1,3 +1,4 @@
+$:.unshift File.expand_path('../../../vim-layout/lib', __FILE__)
 $:.unshift File.expand_path('../../lib', __FILE__)
 $:.unshift File.expand_path('..', __FILE__)
 

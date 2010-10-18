@@ -22,7 +22,7 @@ module Vim
         if window && window.valid?
           window.focus
         else
-          path = [path, $curwin.buffer.name, Dir.pwd].compact.detect { |p| !p.empty? }
+          path = [path, $curwin.buffer.name, Dir.pwd].compact.detect { |path| !path.empty? }
           path = File.expand_path(path)
           create(path) if File.directory?(path)
         end
