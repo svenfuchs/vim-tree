@@ -160,6 +160,7 @@ module Vim
         dir.move_in(line)
         move_to(0)
         render
+        cwd_root
       end
 
       def move_to(line)
