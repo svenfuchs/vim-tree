@@ -48,7 +48,7 @@ module Vim
 
       def cwd(path = line)
         Vim.cwd(path) if path.directory?
-        update_status
+        update_window
       end
 
       def touch

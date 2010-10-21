@@ -18,7 +18,7 @@ module Vim
     class << self
       attr_accessor :last_window
 
-      def run(path)
+      def run(path = nil)
         if window && window.valid?
           window.focus
         else
@@ -74,8 +74,7 @@ module Vim
       init_keys
 
       Vim.cwd(root)
-      update_status
-      # update_tab_label
+      update_window
     end
 
     def init_window
@@ -151,19 +150,30 @@ module Vim
       map '<c-f> :ruby Vim::Tree.toggle_focus', :mode => 'i', :buffer => false
     end
 
-    def update_status
-      ix, subdirs = 1, ::Dir.getwd.split('/')
-      ix += 1 until ix == subdirs.size - 1 || subdirs[-(ix + 1)..-1].join('/').size > WIDTH - 5
-      status = subdirs[-ix..-1].join('/')
-      status = "../#{status}" if ix < subdirs.size
-      status = status.gsub('//', '/')
-      cmd "setlocal statusline=#{status}"
-      # cmd "setlocal filename=#{status}"
-      cmd ":silent! file #{status}"
+    def update_window
+      dirs = ::Dir.getwd.split('/')
+      update_status(status(dirs))
+      update_buffer_name(dirs.last)
+    end
+
+    def update_status(status)
+      VIM.cmd "setlocal statusline=#{status}"
+    end
+
+    def update_buffer_name(name)
+      VIM.cmd ":silent! file [#{name}]"
     end
 
     def update_tab_label
       # cmd 'set guitablabel=%{getcwd()}'
+    end
+
+    def status(dirs)
+      ix = 1
+      ix += 1 until ix == dirs.size - 1 || dirs[-(ix + 1)..-1].join('/').size > WIDTH - 5
+      status = dirs[-ix..-1].join('/')
+      status = "../#{status}" if ix < dirs.size
+      status = status.gsub('//', '/')
     end
 
     def map_char(char, target = char, options = {})
