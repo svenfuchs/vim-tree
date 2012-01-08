@@ -31,7 +31,7 @@ module Vim
       def create(path)
         cmd "silent! topleft vnew #{@title}"
         tree = Window[0]
-        tree.singleton_class.send(:include, Vim::Layout::Sticky, Vim::Tree, Vim::Tree::Controller)
+        tree.singleton_class.send(:include, Vim::Tree, Vim::Tree::Controller, Vim::Layout::Sticky)
         tree.init(path)
       end
 
@@ -47,7 +47,7 @@ module Vim
         window.sync_to(Vim.eval('expand("%:p")')) if window
       end
 
-      def reload!
+      def reload
         Dir["#{::Vim.runtime_path('vim-tree')}/lib/**/*.rb"].each { |path| load(path) }
       end
 
@@ -82,8 +82,6 @@ module Vim
       cmd ':au BufWritePost * :ruby Vim::Tree.action("refresh")'
       cmd ':au BufEnter     * :ruby Vim::Tree.sync'
       # cmd ':au SessionLoadPost call FsTreeSessionLoaded()'
-
-      cmd 'command! VimTreeReload :ruby Vim::Tree.reload!'
     end
 
     def init_buffer
@@ -152,15 +150,15 @@ module Vim
 
     def update_window
       dirs = ::Dir.getwd.split('/')
-      update_status(status(dirs))
-      update_buffer_name(dirs.last)
+      set_status(status(dirs))
+      set_buffer_name(dirs.last)
     end
 
-    def update_status(status)
+    def set_status(status)
       VIM.cmd "setlocal statusline=#{status}"
     end
 
-    def update_buffer_name(name)
+    def set_buffer_name(name)
       VIM.cmd ":silent! file [#{name}]"
     end
 

@@ -9,4 +9,4 @@ function! s:VimTree(path)
 endfunction
 
 command! -nargs=? -complete=dir VimTree :call <SID>VimTree('<args>')
-
+command! VimTreeReload :ruby Vim::Tree.reload
