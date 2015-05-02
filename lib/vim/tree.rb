@@ -1,11 +1,14 @@
 require 'core_ext/ruby/string/ord'
 require 'core_ext/ruby/kernel/singleton_class'
 
-require 'vim/layout'
 require 'vim/tree/window'
 
 module Vim
   module Tree
+    module Layout
+      autoload :Sticky, 'vim/tree/layout/sticky'
+    end
+
     autoload :Controller, 'vim/tree/controller'
     autoload :Model,      'vim/tree/model'
     autoload :View,       'vim/tree/view'
@@ -30,8 +33,8 @@ module Vim
 
       def create(path)
         cmd "silent! topleft vnew #{@title}"
-        tree = Window[0]
-        tree.singleton_class.send(:include, Vim::Tree, Vim::Tree::Controller, Vim::Layout::Sticky)
+        tree = Vim::Window[0]
+        tree.singleton_class.send(:include, Vim::Tree, Controller, Layout::Sticky)
         tree.init(path)
       end
 
@@ -52,11 +55,7 @@ module Vim
       end
 
       def window
-        Window.detect(&:tree?)
-      end
-
-      def store_last_window
-        self.last_window = Window.previous
+        Vim::Window.detect(&:tree?)
       end
 
       def valid?
@@ -74,7 +73,6 @@ module Vim
       init_keys
 
       Vim.cwd(root)
-      update_window
     end
 
     def init_window
@@ -85,6 +83,8 @@ module Vim
     end
 
     def init_buffer
+      set_buffer_name(File.basename(::Dir.getwd))
+
       cmd "setlocal bufhidden=delete"
       cmd "setlocal buftype=nofile"
       cmd "setlocal noswapfile"
@@ -96,6 +96,7 @@ module Vim
       cmd "setlocal nobuflisted"
       cmd "setlocal textwidth=0"
       cmd "setlocal winfixwidth"
+      cmd "setlocal statusline=%t"
     end
 
     def init_highlighting
@@ -146,32 +147,6 @@ module Vim
       map "<leftrelease> :ruby Vim::Tree.action('click')"
       map '<c-f> :ruby Vim::Tree.toggle_focus', :mode => 'n', :buffer => false
       map '<c-f> :ruby Vim::Tree.toggle_focus', :mode => 'i', :buffer => false
-    end
-
-    def update_window
-      dirs = ::Dir.getwd.split('/')
-      set_status(status(dirs))
-      set_buffer_name(dirs.last)
-    end
-
-    def set_status(status)
-      VIM.cmd "setlocal statusline=#{status}"
-    end
-
-    def set_buffer_name(name)
-      VIM.cmd ":silent! file [#{name}]"
-    end
-
-    def update_tab_label
-      # cmd 'set guitablabel=%{getcwd()}'
-    end
-
-    def status(dirs)
-      ix = 1
-      ix += 1 until ix == dirs.size - 1 || dirs[-(ix + 1)..-1].join('/').size > WIDTH - 5
-      status = dirs[-ix..-1].join('/')
-      status = "../#{status}" if ix < dirs.size
-      status = status.gsub('//', '/')
     end
 
     def map_char(char, target = char, options = {})

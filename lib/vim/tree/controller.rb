@@ -4,6 +4,7 @@ module Vim
   module Tree
     module Controller
       attr_reader :dir, :view
+      attr_accessor :last_window
 
       def init(dir)
         @dir  = Model::Dir.new(dir, nil, :open)
@@ -11,7 +12,7 @@ module Vim
       end
 
       def action(action)
-        Vim::Tree.store_last_window
+        self.last_window = Vim::Window.previous
         send(action)
       end
 
@@ -26,10 +27,10 @@ module Vim
 
       def toggle_focus
         if !focussed?
-          Vim::Tree.last_window = $curwin
+          self.last_window = $curwin
           focus
-        elsif Vim::Tree.last_window
-          Vim::Tree::last_window.focus
+        elsif self.last_window
+          self.last_window.focus
         else
           cmd "wincmd w"
         end
@@ -180,8 +181,10 @@ module Vim
       end
 
       def render
-        unlocked do
-          buffer.display(view.render)
+        maintain_cursor do
+          unlocked do
+            buffer.display(view.render)
+          end
         end
       end
     end
