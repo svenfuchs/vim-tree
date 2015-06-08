@@ -41,7 +41,7 @@ The following keys work in the tree window:
   s            - open a file with split
   v            - open a file with vsplit
   u            - move out (move the tree's root directory one level up)
-  d            - move into (makes a directory the tree's root and working dir)
+  i            - move into (makes a directory the tree's root and working dir)
   c            - change current working directory to selected directory
   C            - change current working directory to root directory
   n            - create a file
