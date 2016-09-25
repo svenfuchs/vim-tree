@@ -1,5 +1,3 @@
-require 'core_ext/ruby/kernel/singleton_class'
-
 module Vim
   module Tree
     module Layout

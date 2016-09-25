@@ -40,7 +40,9 @@ module Vim
 
         def touch(name)
           path = directory? ? self : dirname
-          FileUtils.touch(path.join(name))
+          path = path.join(name)
+          FileUtils.mkdir_p(path.dirname)
+          FileUtils.touch(path)
         end
 
         def mkdir(name)
@@ -49,12 +51,15 @@ module Vim
         end
 
         def cp(name)
-          method = directory? ? :cp_r : :cp
-          FileUtils.send(method, self, dirname.join(name))
+          path = dirname.join(name)
+          FileUtils.mkdir_p(path.dirname)
+          FileUtils.send(directory? ? :cp_r : :cp, self, path)
         end
 
         def mv(name)
-          rename(dirname.join(name))
+          path = dirname.join(name)
+          FileUtils.mkdir_p(path.dirname)
+          rename(path)
         end
 
         def rm

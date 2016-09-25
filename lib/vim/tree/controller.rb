@@ -52,26 +52,26 @@ module Vim
       end
 
       def touch
-        name = prompt('New file:')
-        line.touch(name) unless name.empty?
+        path = prompt('New file:')
+        line.touch(path) unless path.empty?
         refresh
       end
 
       def mkdir
-        name = prompt('New directory:')
-        line.mkdir(name) unless name.empty?
+        path = prompt('New directory:')
+        line.mkdir(path) unless path.empty?
         refresh
       end
 
       def cp
-        name = prompt("Copy \"#{File.basename(line)}\" to:")
-        line.cp(name) unless name.empty?
+        path = prompt("Copy \"#{File.basename(line)}\" to:")
+        line.cp(path) unless path.empty?
         refresh
       end
 
       def mv
-        name = prompt("Move/rename \"#{File.basename(line)}\" to:")
-        line.mv(name) unless name.empty?
+        path = prompt("Move/rename \"#{File.basename(line)}\" to:")
+        line.mv(path) unless path.empty?
         refresh
       end
 
@@ -176,7 +176,7 @@ module Vim
       end
 
       def prompt(prompt)
-        eval("input('#{prompt} ')")
+        eval("input('#{prompt} ', '', 'file')").to_s
       end
 
       def render

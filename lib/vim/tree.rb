@@ -1,7 +1,5 @@
 # encoding: UTF-8
 
-require 'core_ext/ruby/string/ord'
-require 'core_ext/ruby/kernel/singleton_class'
 require 'core_ext/vim/vim'
 require 'core_ext/vim/buffer'
 require 'core_ext/vim/window'
