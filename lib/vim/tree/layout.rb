@@ -5,8 +5,8 @@ module Vim
         include Vim
 
         def included(base)
-          position!
           cmd 'au WinLeave * :ruby Vim::Window.previous = $curwin'
+          position!
           # cmd 'au WinEnter * :ruby Vim::Tree::Layout.position!'
           # %w(H J K L).each { |key| map_wincmd(key) }
         end
