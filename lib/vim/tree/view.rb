@@ -27,7 +27,14 @@ module Vim
 
         def to_s
           '  ' * node.level + "#{node.open? ? OPEN_HANDLE : CLOSED_HANDLE } #{node.basename}"
+          # '  ' * node.level + blue("#{node.open? ? OPEN_HANDLE : CLOSED_HANDLE } #{node.basename}")
         end
+
+        private
+
+          def blue(str)
+            "\x1b[38;5;12m#{str}\x1b[0m"
+          end
       end
 
       class File < Base

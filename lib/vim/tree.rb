@@ -1,7 +1,12 @@
+# encoding: UTF-8
+
 require 'core_ext/ruby/string/ord'
 require 'core_ext/ruby/kernel/singleton_class'
+require 'core_ext/vim/vim'
+require 'core_ext/vim/buffer'
+require 'core_ext/vim/window'
 
-require 'vim/layout'
+require 'vim/tree/layout'
 require 'vim/tree/window'
 
 module Vim
@@ -31,7 +36,7 @@ module Vim
       def create(path)
         cmd "silent! topleft vnew #{@title}"
         tree = Window[0]
-        tree.singleton_class.send(:include, Vim::Tree, Vim::Tree::Controller, Vim::Layout::Sticky)
+        tree.singleton_class.send(:include, Vim::Tree, Vim::Tree::Controller, Vim::Tree::Layout)
         tree.init(path)
       end
 

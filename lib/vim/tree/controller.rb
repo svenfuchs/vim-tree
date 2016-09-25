@@ -181,7 +181,9 @@ module Vim
 
       def render
         unlocked do
+          line = line_number
           buffer.display(view.render)
+          move_to(line)
         end
       end
     end
